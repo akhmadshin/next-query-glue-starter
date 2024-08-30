@@ -1,0 +1,41 @@
+{
+  "id": 1,
+  "attributes": {
+    "title": "Lorem ipsum",
+    "description": [
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dui ultricies, tincidunt turpis eget, maximus elit. Cras molestie enim quis orci mattis varius. Quisque id rhoncus massa, ut laoreet nunc. Ut lorem ex, varius sed ullamcorper a, ultricies vitae urna. Aliquam blandit leo vitae fermentum eleifend. Vivamus varius a tortor ut interdum. Duis eu neque vestibulum, volutpat risus quis, accumsan nulla."
+          }
+        ]
+      }
+    ],
+    "content": [
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": "Phasellus lectus elit, bibendum sit amet gravida porttitor, bibendum vehicula orci. Morbi quis tempor lorem. Donec efficitur sed mi rutrum fermentum. Suspendisse eu nibh non purus sodales euismod eget sit amet purus. Aenean tincidunt quam sed massa dignissim, et luctus magna faucibus. Vivamus dictum nec tellus a tempor. Integer condimentum mi turpis, nec dictum augue tempor vel. Donec lobortis tincidunt enim sed congue."
+          }
+        ]
+      }
+    ],
+    "slug": "lorem-ipsum",
+    "thumbnail": {
+      "data": {
+        "id": 2,
+        "attributes": {
+          "thumbhash": "dDkGDYL7Fsl9hnmNgky4dnKAJwVX",
+          "name": "jakub_dziubak_Xt_Ud5_Si_X464_unsplash.jpg",
+          "alternativeText": null,
+          "height": 1282,
+          "width": 1920
+        }
+      }
+    }
+  }
+}
