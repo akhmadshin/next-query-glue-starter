@@ -22,7 +22,7 @@ export const BlogItemPage = () => {
   const articleAttributes = article.attributes || {};
   const coverAttributes = articleAttributes.thumbnail.data!.attributes || {};
 
-  const {title, description, sections } = articleAttributes;
+  const {title, description, content } = articleAttributes;
 
   return (
     <Container>
@@ -52,7 +52,7 @@ export const BlogItemPage = () => {
           <div className="text-xl mt-8">
             <RichText content={description}/>
           </div>
-          <RichText content={description}/>
+          <RichText content={content}/>
         </div>
       </article>
     </Container>
