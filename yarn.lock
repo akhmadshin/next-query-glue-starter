@@ -1880,10 +1880,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-next-query-glue@0.0.1-rc.5:
-  version "0.0.1-rc.5"
-  resolved "https://registry.yarnpkg.com/next-query-glue/-/next-query-glue-0.0.1-rc.5.tgz#99f45bae57cf20157bb0bc61f9bad04a49e0f0a4"
-  integrity sha512-MytoAc0SRem525/Vbwcyz3yphKXxEGIrLNVKx3KcZEdpiBMFQG94Z7sA4wTEiRrzKV49zaOBC+E7dEksm47H8w==
+next-query-glue@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/next-query-glue/-/next-query-glue-0.0.2.tgz#a36a087b79eb818e4444045743eb6b965a762b3d"
+  integrity sha512-Mx98NPfSSf3X/bTs9XpLiqlLTp0kjGofEm0m8VBW+4TwBRDbLf2SmDPJtXk+CJ/9MUQ8gcG6El9osXRDN1phHw==
 
 next@14.2.5:
   version "14.2.5"
