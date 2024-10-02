@@ -1,21 +1,17 @@
 import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
-import { useIsomorphicLayoutEffect } from 'usehooks-ts';
+import { useEffect } from 'react';
 
 export const Page: ParentComponent = ({children}) => {
   const queryClient = useQueryClient()
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
     if (!queryClient.isFetching()) {
       window.placeholderData = undefined;
     }
-    if (window.pageMounted) {
-      window.pageMounted();
-      window.pageMounted = undefined;
-    }
-  })
+  }, [])
   return children;
 }

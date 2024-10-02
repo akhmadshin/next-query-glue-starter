@@ -1,5 +1,5 @@
 import NextLink, { LinkProps } from 'next/link';
-import React, { AnchorHTMLAttributes, MouseEvent, PropsWithChildren } from 'react';
+import React, { AnchorHTMLAttributes, MouseEvent, PropsWithChildren, useRef } from 'react';
 import { prepareDirectNavigation } from 'next-query-glue';
 import singletonRouter from 'next/router';
 import { transitionHelper } from '@/lib/transitionHelper';
@@ -9,41 +9,40 @@ type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorEleme
 
 type Props = NextLinkProps & {
   placeholderData?: object;
-  isDirect?: boolean;
-  beforeTransition?: () => void;
-  afterTransition?: () => void;
 }
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
-    beforeTransition,
-    afterTransition,
     onClick,
-    isDirect = true,
     href,
     children,
     ...restProps
   } = props;
+  const localRef = useRef<HTMLImageElement>();
+
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (onClick) {
       onClick(e);
     }
-    if (isDirect) {
-      prepareDirectNavigation({
-        href,
-        singletonRouter,
-        withTrailingSlash: Boolean(process.env.__NEXT_TRAILING_SLASH),
-      });
-      window.placeholderData = placeholderData;
-    }
+
+    prepareDirectNavigation({
+      href,
+      singletonRouter,
+      withTrailingSlash: Boolean(process.env.__NEXT_TRAILING_SLASH),
+    });
+    window.placeholderData = placeholderData;
+
+
     startPageTransition();
+
+    //
+    // e.preventDefault();
+    // router.push(href);
+    // push.call(singletonRouter.router, href);
+    // singletonRouter.router!.getRouteInfo = getRouteInfo.bind(singletonRouter.router);
   }
 
   const startPageTransition = () => {
-    if (beforeTransition) {
-      beforeTransition()
-    }
-
     if (!window.pageMounted) {
       window.pageMountedPromise = new Promise(resolve => {
         window.pageMounted = resolve;
@@ -51,14 +50,8 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     }
 
     transitionHelper({
-      updateDOM: async () => {
-        window.scroll({
-          top: 0,
-        });
+      update: async () => {
         if (window.pageMounted) {
-          if (afterTransition) {
-            afterTransition();
-          }
           await window.pageMountedPromise;
         }
       },
@@ -70,7 +63,15 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       onClick={handleClick}
       href={href}
       prefetch={false}
-      ref={ref}
+      ref={(node) => {
+        // @ts-ignore
+        localRef.current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      }}
       {...restProps}
     >{children}</NextLink>
   )

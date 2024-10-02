@@ -4,63 +4,37 @@
 
 .main-header {
   view-transition-name: main-header;
-}
-
-.out-container {
-  view-transition-name: out-container;
-}
-
-.main-container {
-  view-transition-name: main-container;
-}
-
-.banner-img {
-  view-transition-name: banner-img;
+  contain: layout;
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
+  from { opacity: 0; }
 }
 
 @keyframes fade-out {
-  to {
-    opacity: 0;
-  }
+  to { opacity: 0; }
 }
 
 @keyframes slide-from-right {
-  from {
-    transform: translateX(30px);
-  }
+  from { transform: translateX(30px); }
 }
 
 @keyframes slide-to-left {
-  to {
-    transform: translateX(-30px);
-  }
+  to { transform: translateX(-30px); }
 }
 
-::view-transition-old(main-container) {
-  animation: 990ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
-  3300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+::view-transition-old(root) {
+  animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+  300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
 }
 
-::view-transition-new(main-container) {
-  animation: 2210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
-  3300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
-}
-
-::view-transition-image-pair(root) {
-  isolation: auto;
-}
-
-::view-transition-old(root),
 ::view-transition-new(root) {
-  mix-blend-mode: normal;
-  display: block;
-  animation-duration: 0.35s;
+  animation: 210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+  300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+::view-transition-image-pair(transition-img) {
+  isolation: none;
 }
 
 @media (prefers-reduced-motion) {

@@ -24,17 +24,6 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
   const articleAttributes = article.attributes;
   const coverAttributes = (articleAttributes.thumbnail as ApiResponseMedia).data.attributes;
 
-  const handleBeforeTransition = () => {
-    if (imageRef.current) {
-      imageRef.current.style.viewTransitionName = 'banner-img'
-    }
-  };
-  const handleAfterTransition = () => {
-    if (imageRef.current) {
-      imageRef.current.style.viewTransitionName = '';
-    }
-  }
-
   return (
     <div ref={containerRef}>
       <WithImagePrefetch
@@ -44,16 +33,13 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
         prefetchSize="100vw"
       >
         <Link
-          beforeTransition={handleBeforeTransition}
-          afterTransition={handleAfterTransition}
           href={`/blog/${articleAttributes.slug}/`}
           placeholderData={article}
-          className={'pointer-events-auto card-link'}
         >
-          <article className="flex flex-col items-start justify-between card pointer-events-none">
+          <article className="flex flex-col items-start justify-between card">
             <div className="relative w-full">
               <Image
-                className="lg:aspect-[16/9] aspect-[4/3]"
+                className="lg:aspect-[16/9] aspect-[4/3] transitionable-img"
                 priority={priority}
                 thumbhash={coverAttributes.thumbhash}
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
