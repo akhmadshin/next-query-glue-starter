@@ -10,7 +10,7 @@ import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 import { flushSync } from 'react-dom';
 
-// Prefetch js chunks of the routes
+// Optional. Prefetch js chunks of the routes on initial load.
 (() => {
   if (typeof window === 'undefined') {
     return;
@@ -20,7 +20,7 @@ import { flushSync } from 'react-dom';
   routeLoader.prefetch('/blog/[slug]').catch((e: string) => { throw new Error(e) });
 })()
 
-// Handle view transitions api
+// Optional. Handle view transitions
 const handleRouteChangeStart = (href: string) => {
   flushSync(() => {
     const el = document.querySelector<HTMLImageElement>(`[style*='view-transition-name']`);
@@ -92,6 +92,7 @@ export default function App({ Component, pageProps }: AppProps<{ dehydratedState
       return true;
     });
 
+    // Optional. Handle view transitions
     return () => {
       router.events.off('routeChangeStart', handleRouteChangeStart);
       router.events.off('routeChangeComplete', handleRouteChangeComplete);
@@ -107,20 +108,16 @@ export default function App({ Component, pageProps }: AppProps<{ dehydratedState
     }
   }))
 
-  useIsomorphicLayoutEffect(() => {
-
-  }, [router])
-
   return (
     <NextQueryGlueProvider singletonRouter={singletonRouter}>
       <QueryClientProvider client={queryClient}>
-          <HydrationBoundary state={pageProps.dehydratedState} options={{
-            defaultOptions: {},
-          }}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </HydrationBoundary>
+        <HydrationBoundary state={pageProps.dehydratedState} options={{
+          defaultOptions: {},
+        }}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </HydrationBoundary>
       </QueryClientProvider>
     </NextQueryGlueProvider>
   );

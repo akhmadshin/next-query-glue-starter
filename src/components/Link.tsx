@@ -10,6 +10,19 @@ type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorEleme
 type Props = NextLinkProps & {
   placeholderData?: object;
 }
+
+const startPageTransition = () => {
+  const pageMountedPromise: Promise<void> = new Promise(resolve => {
+    window.pageMounted = resolve;
+  })
+
+  transitionHelper({
+    update: async () => {
+      await pageMountedPromise;
+    },
+  });
+}
+
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -32,30 +45,8 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     });
     window.placeholderData = placeholderData;
 
-
+    // Optional. Start view transition
     startPageTransition();
-
-    //
-    // e.preventDefault();
-    // router.push(href);
-    // push.call(singletonRouter.router, href);
-    // singletonRouter.router!.getRouteInfo = getRouteInfo.bind(singletonRouter.router);
-  }
-
-  const startPageTransition = () => {
-    if (!window.pageMounted) {
-      window.pageMountedPromise = new Promise(resolve => {
-        window.pageMounted = resolve;
-      })
-    }
-
-    transitionHelper({
-      update: async () => {
-        if (window.pageMounted) {
-          await window.pageMountedPromise;
-        }
-      },
-    });
   }
 
   return (
