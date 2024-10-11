@@ -4,7 +4,6 @@
 
 .main-header {
   view-transition-name: main-header;
-  contain: layout;
 }
 
 @keyframes fade-in {

@@ -8,7 +8,7 @@ export function Header() {
 
   return (
     <header>
-      <Container className="mb-16 main-header">
+      <Container className="main-header">
         <div className="flex justify-between items-center flex-1 pt-6 gap-6">
           <div className={navClassName}>
             <Link

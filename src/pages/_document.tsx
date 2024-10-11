@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="dar krelative min-h-screen overflow-x-hidden bg-background font-sans antialiased transition-[background]">
+      <body className="relative min-h-screen overflow-x-hidden bg-background font-sans antialiased transition-[background]">
         <Main/>
         <NextScript/>
       </body>

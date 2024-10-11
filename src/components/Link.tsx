@@ -1,8 +1,9 @@
 import NextLink, { LinkProps } from 'next/link';
 import React, { AnchorHTMLAttributes, MouseEvent, PropsWithChildren, useRef } from 'react';
 import { prepareDirectNavigation } from 'next-query-glue';
-import singletonRouter from 'next/router';
+import singletonRouter, { useRouter } from 'next/router';
 import { transitionHelper } from '@/lib/transitionHelper';
+import { handleTransitionStarted } from '@/pages/_app';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
@@ -10,8 +11,12 @@ type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorEleme
 type Props = NextLinkProps & {
   placeholderData?: object;
 }
-
+// Optional. View transition
 const startPageTransition = () => {
+  if (window.transition) {
+    window.transition.skipTransition();
+  }
+
   const pageMountedPromise: Promise<void> = new Promise(resolve => {
     window.pageMounted = resolve;
   })
@@ -32,12 +37,16 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     ...restProps
   } = props;
   const localRef = useRef<HTMLImageElement>();
+  const router = useRouter();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (onClick) {
       onClick(e);
     }
 
+    e.preventDefault();
+
+    handleTransitionStarted(href as string);
     prepareDirectNavigation({
       href,
       singletonRouter,
@@ -45,8 +54,11 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     });
     window.placeholderData = placeholderData;
 
-    // Optional. Start view transition
     startPageTransition();
+
+    setTimeout(() => {
+      return router.push(href)
+    }, 13)
   }
 
   return (

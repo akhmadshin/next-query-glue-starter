@@ -21,9 +21,10 @@ export const BlogItemPrePage: ParentComponent = ({ children }) => {
   }
 
   const articleAttributes = article.attributes || {};
-  const coverAttributes = articleAttributes.thumbnail.data!.attributes || {};
+  const {title, description, thumbnail } = articleAttributes;
 
-  const {title, description, content } = articleAttributes;
+  const coverAttributes = thumbnail.data!.attributes || {};
+
 
   return (
     <Container>

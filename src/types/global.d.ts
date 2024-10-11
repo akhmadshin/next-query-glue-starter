@@ -5,6 +5,8 @@ declare global {
     pageMounted?: () => void;
     pageMountedPromise?: Promise<void>;
     placeholderData?: object;
+    transition?: ViewTransition;
+    isTransitionAvailable?: boolean;
     transitionImg?: string;
     isOptimisticNavigation?: boolean;
     locales?: {

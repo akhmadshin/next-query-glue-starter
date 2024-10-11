@@ -1,23 +1,31 @@
 import { Component, ParentComponent } from '@/types/general';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useTimeout } from 'usehooks-ts';
 
 interface Props {
-  loader?: Component;
+  loader?: ReactNode;
   defer?: boolean;
 }
-export const WithDeferOnSoftNavigation: ParentComponent<Props> = ({ children }) => {
-  const [visible, setVisible] = useState(typeof window === 'undefined' || !window.pageMounted || !document.startViewTransition)
-
+export const WithDeferOnSoftNavigation: ParentComponent<Props> = ({ children, loader }) => {
+  const [visible, setVisible] = useState(typeof window === 'undefined' || !window.transition)
 
   useEffect(() => {
     if (typeof window === 'undefined') {
       return
     }
     document.addEventListener('transitionFinished', () => {
-      setVisible(true)
+      setTimeout(() => {
+        setVisible(true);
+      }, 0)
     })
   }, []);
 
-  return visible ? children : null;
+  if (!visible) {
+    if (loader) {
+      return loader;
+    }
+    return null;
+  }
+
+  return children;
 }

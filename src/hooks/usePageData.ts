@@ -1,21 +1,19 @@
-import { DehydratedState, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getQueryFn, getQueryKey } from 'next-query-glue';
+import { DehydratedState, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import { getQueryKey, getQueryFn } from 'next-query-glue';
 import singletonRouter from 'next/dist/client/router';
 
 export const usePageData = <T>() => {
-  const queryClient = useQueryClient();
   const router = useRouter();
+  const queryKey = [getQueryKey(router, Boolean(process.env.__NEXT_TRAILING_SLASH))];
   const placeholderData = typeof window === 'undefined' ? undefined : window.placeholderData;
-  const queryKey = [getQueryKey(router, Boolean(process.env.__NEXT_TRAILING_SLASH))]
 
-  const res =  useQuery<unknown, unknown, T>({
+  return useQuery<unknown, unknown, T>({
+    staleTime: Infinity,
+    gcTime: Infinity,
+    structuralSharing: false,
     queryKey,
     queryFn: async () => {
-      const serverData = queryClient.getQueryData([...queryKey]);
-      if (serverData && !res.isStale) {
-        return serverData;
-      }
       return getQueryFn(router, Boolean(process.env.__NEXT_TRAILING_SLASH), singletonRouter).then((props) => {
         const res = props as { dehydratedState: DehydratedState};
         return res?.dehydratedState ? res.dehydratedState.queries[0].state.data : props;
@@ -23,5 +21,4 @@ export const usePageData = <T>() => {
     },
     placeholderData,
   });
-  return res;
 }

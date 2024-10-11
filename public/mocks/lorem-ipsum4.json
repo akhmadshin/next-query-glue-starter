@@ -1,5 +1,5 @@
 {
-  "id": 3,
+  "id": 6,
   "attributes": {
     "title": "Lorem ipsum",
     "description": [
@@ -13,7 +13,7 @@
         ]
       }
     ],
-    "slug": "lorem-ipsum",
+    "slug": "lorem-ipsum4",
     "content": [
       {
         "type": "paragraph",
@@ -32,14 +32,32 @@
             "text": "Etiam finibus sit amet felis semper ultricies. Sed vestibulum vestibulum ipsum, vel consequat eros pellentesque sit amet. Proin nec dictum velit. Vestibulum mollis augue id lorem dictum, sed luctus tortor sollicitudin. In ut neque tortor. Maecenas ut bibendum erat, non varius magna. Proin placerat a magna quis congue. Fusce viverra dui sed ex aliquam, in consectetur erat aliquam. Integer sed venenatis elit. Integer porttitor in massa non facilisis. Aenean lobortis facilisis pretium. Praesent eu erat egestas, rutrum odio non, ultricies ligula."
           }
         ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": ""
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "text",
+            "text": ""
+          }
+        ]
       }
     ],
     "thumbnail": {
       "data": {
-        "id": 23,
+        "id": 20,
         "attributes": {
-          "thumbhash": "LggGDYJCJgJfWoiHhlZ2aEFtsP8X",
-          "name": "patrick_perkins_ETR_Pjvb0_KM_0_unsplash.jpg",
+          "thumbhash": "BhgKDYQXiId2iHeAfJd4elSAhwVH",
+          "name": "joshua_reddekopp_Sy_Ym_XS_Dn_J54_unsplash.jpg",
           "alternativeText": null,
           "height": 1280,
           "width": 1920

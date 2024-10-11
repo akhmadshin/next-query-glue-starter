@@ -36,7 +36,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
           href={`/blog/${articleAttributes.slug}/`}
           placeholderData={article}
         >
-          <article className="flex flex-col items-start justify-between card">
+          <article className="flex flex-col items-start justify-between">
             <div className="relative w-full">
               <Image
                 className="lg:aspect-[16/9] aspect-[4/3] transitionable-img"

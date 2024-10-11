@@ -1,3 +1,5 @@
+import { requestIdleCallback } from '@/lib/request-idle-callback';
+
 interface Props {
   skipTransition?: boolean;
   classNames?: string[];
@@ -5,42 +7,51 @@ interface Props {
   types?: string[];
   onFinish?: () => void;
 }
+const transitionFinished = new CustomEvent("transitionFinished", {
+  detail: {},
+});
+
 export function transitionHelper({
-  skipTransition = false,
-  types = [],
-  update,
-  onFinish,
-}: Props) {
+                                   skipTransition = false,
+                                   types = [],
+                                   update,
+                                   onFinish,
+                                 }: Props) {
+  window.isTransitionAvailable = true;
 
   if (skipTransition || !document.startViewTransition) {
     const updateCallbackDone = Promise.resolve(update());
 
+
     return {
       ready: Promise.resolve(Error('View transitions unsupported')),
       updateCallbackDone,
-      finished: updateCallbackDone,
+      finished: updateCallbackDone.then(() => {
+        requestIdleCallback(() => {
+          document.dispatchEvent(transitionFinished);
+        })
+      }),
       skipTransition: () => undefined,
     };
   }
 
   const transition = document.startViewTransition(update);
+  window.transition = transition;
   transition.finished
     .catch((e: string) => {
       throw new Error(e);
     })
     .finally(() => {
-      const el = document.querySelector<HTMLImageElement>(`[style*='view-transition-name']`);
-      if (el) {
-        el.style.viewTransitionName = '';
+        window.transition = undefined;
+        const el = document.querySelector<HTMLImageElement>(`[style*='view-transition-name']`);
+        if (el) {
+          el.style.viewTransitionName = '';
+        }
+        document.dispatchEvent(transitionFinished)
+        if (onFinish) {
+          onFinish();
+        }
       }
-      const transitionFinished = new CustomEvent("transitionFinished", {
-        detail: {},
-      });
-      document.dispatchEvent(transitionFinished)
-      if (onFinish) {
-        onFinish();
-      }
-    }
-  );
+    );
   return transition;
 }
