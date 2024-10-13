@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 
 import { Link } from '@/components/Link';
-import { SkeletonArticleCard } from '@/components/ArticleCard/SkeletonArticleCard';
-import { Image } from '@/components/Image';
+import { SkeletonArticleCard } from '@/components/skeletons/SkeletonArticleCard';
+import { Image } from '@/components/image';
+import { WithImagePrefetch } from '@/components/image/WithImagePrefetch';
 import { RichText } from '@/components/RichText';
 import { ApiResponseMedia, ArticleListItem } from '@/types/api';
 import { APIResponseData } from '@/types/strapi';
-import { WithImagePrefetch } from '@/components/Image/WithImagePrefetch';
 
 interface Props {
   article: APIResponseData<ArticleListItem>;
@@ -27,7 +27,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
   return (
     <div ref={containerRef}>
       <WithImagePrefetch
-        src={`/${coverAttributes.name}`}
+        src={coverAttributes.name}
         height={coverAttributes.height}
         width={coverAttributes.width}
         prefetchSize="100vw"
@@ -37,7 +37,10 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
           placeholderData={article}
         >
           <article className="flex flex-col items-start justify-between">
-            <div className="relative w-full">
+            <div
+              className="relative w-full"
+              // className={articleAttributes.title === 'Three ways to achieve instant navigation' ? 'relative w-full transition-img' : 'relative w-full'}
+            >
               <Image
                 className="lg:aspect-[16/9] aspect-[4/3] transitionable-img"
                 priority={priority}
@@ -56,7 +59,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
                 {articleAttributes.title}
               </h3>
               <div className="relative z-10 mt-3 line-clamp-3 text-sm leading-6 text-zinc-600 dark:text-zinc-200">
-                <RichText content={articleAttributes.description} className="prose" />
+                <RichText content={articleAttributes.description} className="prose prose-slate" />
               </div>
             </div>
           </article>

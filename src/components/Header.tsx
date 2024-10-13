@@ -2,9 +2,13 @@ import React from 'react';
 
 import { Link } from '@/components/Link';
 import { Container } from '@/components/Container';
+import { ThemeSwitch } from '@/components/ThemeSwitch';
+import { useRouter } from 'next/router';
+import { cn } from '@/lib/utils';
 
 export function Header() {
   const navClassName = 'flex items-center gap-4 md:gap-6 lg:gap-12';
+  const router = useRouter();
 
   return (
     <header>
@@ -12,17 +16,22 @@ export function Header() {
         <div className="flex justify-between items-center flex-1 pt-6 gap-6">
           <div className={navClassName}>
             <Link
+              className={cn(
+                "border-b-4",
+                router.pathname === '/' ? "border-neutral-950 dark:border-gray-200" : 'border-transparent',
+              )}
               href="/"
               aria-label="Home"
             >
-              <span className="font-bold">Home</span>
+              <div className="flex items-center h-9">
+                <span className="font-bold">
+                Home
+              </span>
+              </div>
             </Link>
-            {/*<NextLink*/}
-            {/*  href="/blog/3-ways-to-achieve-instant-navigation/"*/}
-            {/*  aria-label="Article"*/}
-            {/*>*/}
-            {/*  <span className="font-bold">Article</span>*/}
-            {/*</NextLink>*/}
+          </div>
+          <div className={navClassName}>
+            <ThemeSwitch />
           </div>
         </div>
       </Container>

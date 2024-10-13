@@ -4,7 +4,7 @@ import { SkeletonImage } from '@/components/skeletons/SkeletonImage';
 
 export const SkeletonArticleCard: Component = () => {
   return (
-    <article className="flex flex-col items-start justify-between pointer-events-none">
+    <article className="flex flex-col items-start justify-between">
       <SkeletonImage />
       <div className=" w-full">
         <div className="mt-3 text-lg font-semibold tracking-tight leading-6">

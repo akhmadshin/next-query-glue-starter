@@ -11,7 +11,7 @@ type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorEleme
 type Props = NextLinkProps & {
   placeholderData?: object;
 }
-// Optional. View transition
+
 const startPageTransition = () => {
   if (window.transition) {
     window.transition.skipTransition();
@@ -50,7 +50,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     prepareDirectNavigation({
       href,
       singletonRouter,
-      withTrailingSlash: Boolean(process.env.__NEXT_TRAILING_SLASH),
     });
     window.placeholderData = placeholderData;
 

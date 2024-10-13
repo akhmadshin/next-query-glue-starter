@@ -1,15 +1,18 @@
 import React from 'react';
 import { BlogItemPrePage } from '@/routes/BlogItemPage/BlogItemPrePage';
-import { WithDeferOnSoftNavigation } from '@/hocs/WithDeferOnSoftNavigation';
+import { WithDeferOnViewTransition } from '@/hocs/WithDeferOnViewTransition';
 import { BlogItemPostPage } from '@/routes/BlogItemPage/BlogItemPostPage';
 import { BlogItemPostPageLoader } from '@/routes/BlogItemPage/BlogItemPostPageLoader';
+import { Page } from '@/components/Page';
 
 export const BlogItemPage = () => {
   return (
-    <BlogItemPrePage>
-      <WithDeferOnSoftNavigation loader={<BlogItemPostPageLoader />}>
-        <BlogItemPostPage />
-      </WithDeferOnSoftNavigation>
-    </BlogItemPrePage>
+    <Page>
+      <BlogItemPrePage>
+        <WithDeferOnViewTransition loader={<BlogItemPostPageLoader />}>
+          <BlogItemPostPage />
+        </WithDeferOnViewTransition>
+      </BlogItemPrePage>
+    </Page>
   )
 }

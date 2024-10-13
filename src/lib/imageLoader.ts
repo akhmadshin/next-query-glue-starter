@@ -1,5 +1,5 @@
 import { ImageLoaderProps } from 'next/image';
 
 export default function imageLoader({ src, width }: ImageLoaderProps) {
-  return `${src.replace('/', `/assets/${width}_`)}`
+  return `${src.replace('/', `/uploads/${width}_`)}`
 }

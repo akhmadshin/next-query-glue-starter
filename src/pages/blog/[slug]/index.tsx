@@ -18,7 +18,6 @@ export const getServerSideProps = withSSRTanStackQuery<ArticleItemApi, { slug: s
     }
   } catch (err) {
     console.log('err = ', err);
-
     return {
       notFound: true,
     }

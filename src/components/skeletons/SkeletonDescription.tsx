@@ -7,6 +7,7 @@ export const SkeletonDescription: Component = () => {
       <SkeletonText width="95%"/>
       <SkeletonText width="75%"/>
       <SkeletonText width="60%"/>
+      <SkeletonText width="40%"/>
     </div>
   );
 }

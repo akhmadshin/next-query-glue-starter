@@ -1,6 +1,6 @@
 import { ParentComponent } from '@/types/general';
 import React, { useState } from 'react';
-import { ImagePreload } from '@/components/Image/ImagePreload';
+import { ImagePreload } from '@/components/image/ImagePreload';
 
 interface Props {
   prefetchSize: string;

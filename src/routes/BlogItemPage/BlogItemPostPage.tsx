@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { usePageData } from '@/hooks/usePageData';
 import { BlogItemPageProps } from '@/types/pages/blogItemPage';
 import { ArticleItemApi } from '@/types/api';
 import { requestIdleCallback } from '@/lib/request-idle-callback';
 import { BlogItemPostPageLoader } from '@/routes/BlogItemPage/BlogItemPostPageLoader';
 import { RichText } from '@/components/RichText';
+import { cn } from '@/lib/utils';
 
 export const BlogItemPostPage = () => {
   const { data: article, isLoading, isFetching} = usePageData<BlogItemPageProps>();
-
   if (isLoading || isFetching) {
     return <BlogItemPostPageLoader />;
   }
@@ -26,6 +26,7 @@ const BlogItemContent = ({ article }: { article: ArticleItemApi }) => {
   const articleAttributes = article.attributes || {};
   const { content } = articleAttributes;
   const ref = useRef<HTMLDivElement>(null);
+  const [isInvisible] = useState(typeof window !== 'undefined');
 
   useEffect(() => {
     if (!article || !ref.current) {
@@ -40,7 +41,13 @@ const BlogItemContent = ({ article }: { article: ArticleItemApi }) => {
   }, []);
 
   return (
-    <div>
+    <div
+      ref={ref}
+      className={cn(
+        'transition-opacity ease-in duration-500',
+        isInvisible ? 'opacity-0' : 'opacity-1',
+      )}
+    >
       <RichText content={content}/>
     </div>
   )

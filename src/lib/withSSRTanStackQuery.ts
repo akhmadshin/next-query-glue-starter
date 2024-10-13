@@ -8,13 +8,8 @@ function removeTrailingSlash(route: string) {
 
 const normalizeResolvedUrl = (resolvedUrl: string) => {
   const pathnameAndQuery = resolvedUrl.split('?') as [string, string];
-  let pathname = removeTrailingSlash(pathnameAndQuery[0]);
+  const pathname = removeTrailingSlash(pathnameAndQuery[0]);
   let query = pathnameAndQuery[1];
-
-
-  if (process.env.__NEXT_TRAILING_SLASH && pathname !== '/') {
-    pathname = `${pathname}/`
-  }
   if (query) {
     const params = new URLSearchParams(query);
     params.forEach((value, key) => {

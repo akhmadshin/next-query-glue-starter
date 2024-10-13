@@ -1,8 +1,9 @@
 import { ArticleCard } from '@/components/ArticleCard';
+import { SkeletonArticleCard } from '@/components/skeletons/SkeletonArticleCard';
+
 import React from 'react';
 import { ArticleListApi } from '@/types/api';
 import { Component } from '@/types/general';
-import { SkeletonArticleCard } from '@/components/ArticleCard/SkeletonArticleCard';
 
 interface Props {
   articles?: ArticleListApi;
@@ -13,8 +14,6 @@ const ArticleCards: Component<Props> = ({ articles, isLoading }) => {
   if (!articles && isLoading) {
     return (
       <>
-        <SkeletonArticleCard/>
-        <SkeletonArticleCard/>
         <SkeletonArticleCard/>
         <SkeletonArticleCard/>
       </>

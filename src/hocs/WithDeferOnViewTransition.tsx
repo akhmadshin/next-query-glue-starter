@@ -1,12 +1,11 @@
-import { Component, ParentComponent } from '@/types/general';
+import { ParentComponent } from '@/types/general';
 import { ReactNode, useEffect, useState } from 'react';
-import { useTimeout } from 'usehooks-ts';
 
 interface Props {
   loader?: ReactNode;
   defer?: boolean;
 }
-export const WithDeferOnSoftNavigation: ParentComponent<Props> = ({ children, loader }) => {
+export const WithDeferOnViewTransition: ParentComponent<Props> = ({ children, loader }) => {
   const [visible, setVisible] = useState(typeof window === 'undefined' || !window.transition)
 
   useEffect(() => {

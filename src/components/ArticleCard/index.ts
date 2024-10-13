@@ -1,1 +1,0 @@
-export { ArticleCard } from './ArticleCard';

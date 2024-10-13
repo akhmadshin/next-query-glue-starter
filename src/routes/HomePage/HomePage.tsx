@@ -5,33 +5,36 @@ import { Container } from '@/components/Container';
 import { ArticleList } from '@/components/ArticleList';
 import { usePageData } from '@/hooks/usePageData';
 import { HomePageProps } from '@/types/pages/homePage';
+import { Page } from '@/components/Page';
 
+const title = 'Next.js starter with fastest navigation possible.';
+const description = 'That next.js starter demonstrates consistently fast navigation via optimistic UI. Navigation stays responsive regardless of the Internet speed or CPU performance.';
 
 export const HomePage = () => {
   const { data: articles, isLoading, isFetching} = usePageData<HomePageProps>();
 
   return (
-    <Container>
-      <Meta
-        title="Next.js site with optimistic navigation and View Transitions API"
-        description="No matter how slow the user’s Internet is or how weak his hardware is, site navigation remains instantaneous"
-      />
-      <div className="max-w-2xl">
-        <div className="prose lg:prose-xl dark:prose-invert max-w-none">
-          <h1>Demo blog</h1>
-          <p className="mt-10 text-lg text-zinc-600 dark:text-zinc-100">
-            That next.js website demonstrates consistently fast navigation via optimistic UI. Navigation stays instantaneous
-            regardless of the Internet speed or CPU performance.
+    <Page>
+      <Container>
+        <Meta
+          title={title}
+          description={description}
+        />
+        <div className="prose lg:prose-xl dark:prose-invert max-w-2xl">
+          <h1>
+            {title}
+          </h1>
+          <p>
+            {description}{' '}
             Click on any card below to see it.
           </p>
           <code>
-            Powered by <a href="https://github.com/akhmadshin/next-query-glue" target="_blank" rel="noreferrer">next-query-glue</a> and <a
-            href="https://github.com/TanStack/query" target="_blank" rel="noreferrer">react-query</a>.
+            Powered by <a href="https://github.com/akhmadshin/next-query-glue" target="_blank">next-query-glue</a> and <a
+            href="https://github.com/TanStack/query" target="_blank">react-query</a>.
           </code>
         </div>
-
-      </div>
-      <ArticleList articles={articles} isLoading={isLoading || isFetching}/>
-    </Container>
+        <ArticleList articles={articles} isLoading={isLoading || isFetching}/>
+      </Container>
+    </Page>
   );
 }

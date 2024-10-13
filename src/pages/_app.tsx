@@ -1,17 +1,21 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import singletonRouter from 'next/dist/client/router';
-import { prepareDirectNavigation, NextQueryGlueProvider } from 'next-query-glue';
-import { DehydratedState, HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
-import { Layout } from '@/components/Layout';
-import { createRouteLoader } from 'next/dist/client/route-loader';
-import { flushSync } from 'react-dom';
-import { transitionHelper } from '@/lib/transitionHelper';
-import { useIsomorphicLayoutEffect } from 'usehooks-ts';
+import '@/styles/globals.css'
+import '@/styles/view-transitions.css'
 
-// Optional. Prefetch js chunks of the routes on initial load.
+import type { DehydratedState } from '@tanstack/react-query';
+import { HydrationBoundary } from '@tanstack/react-query'
+import React, { useCallback, useEffect } from 'react';
+import type { AppProps } from 'next/app';
+import WithQueryClientProvider from '@/components/WithQueryClientProvider';
+import { useRouter } from 'next/router';
+import { NextQueryGlueProvider, prepareDirectNavigation } from 'next-query-glue';
+import singletonRouter from 'next/dist/client/router';
+import { ParentComponent } from '@/types/general';
+import { ThemeProvider } from 'next-themes';
+import { Layout } from '@/components/Layout';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
+import { transitionHelper } from '@/lib/transitionHelper';
+import { createRouteLoader } from 'next/dist/client/route-loader';
+
 (() => {
   if (typeof window === 'undefined') {
     return;
@@ -19,10 +23,26 @@ import { useIsomorphicLayoutEffect } from 'usehooks-ts';
   const routeLoader = createRouteLoader('');
   routeLoader.loadRoute('/').catch((e: string) => { throw new Error(e) });
   routeLoader.loadRoute('/blog/[slug]').catch((e: string) => { throw new Error(e) });
-})()
+})();
 
-// Optional. Handle view transitions
-let isTransitionEnded = false;
+const Providers: ParentComponent = ({ children }) => {
+  const pathModifier = useCallback((route: string) => {
+    return route;
+  }, []);
+
+  return (
+    <NextQueryGlueProvider singletonRouter={singletonRouter} pathModifier={pathModifier}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+      </ThemeProvider>
+    </NextQueryGlueProvider>
+  );
+}
 
 export const handleTransitionStarted = (href: string) => {
   const clickedLink = document.querySelector<HTMLImageElement>(`a[href$='${href}']`);
@@ -42,24 +62,15 @@ export const handleTransitionStarted = (href: string) => {
   }
 }
 
-const handleRouteChangeStart = (href: string) => {
-  if (!window.isTransitionAvailable) {
-    return;
-  }
-  window.isTransitionAvailable = false;
-  isTransitionEnded = false;
-}
-
-const handleRouteChangeComplete = (e: any) => {
-  if (isTransitionEnded === true) {
-    return;
-  }
-  isTransitionEnded = true;
+const handleRouteChangeComplete = () => {
   if (typeof window === 'undefined') {
     return;
   }
-
+  if (!window.pageMounted) {
+    return;
+  }
   const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
+
   if (transitionImg) {
     transitionImg.style.viewTransitionName = 'transition-img';
   }
@@ -71,20 +82,20 @@ const handleRouteChangeComplete = (e: any) => {
   }
 }
 
-export default function App({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
+
+export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
+
 
   useIsomorphicLayoutEffect(() => {
     if (!router) {
       return;
     }
-    router.events.on('routeChangeStart', handleRouteChangeStart);
     router.events.on('routeChangeComplete', handleRouteChangeComplete);
 
     // If the component is unmounted, unsubscribe
     // from the event with the `off` method:
     return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart);
       router.events.off('routeChangeComplete', handleRouteChangeComplete);
     }
   }, []);
@@ -95,8 +106,7 @@ export default function App({ Component, pageProps }: AppProps<{ dehydratedState
     router.beforePopState((props) => {
       const { url, as, options } = props;
       const key = (props as any).key;
-      const v = sessionStorage.getItem('__next_scroll_' + key)
-      let forcedScroll: { x: number; y: number } | undefined
+      let forcedScroll = { x: 0, y: 0 };
       try {
         const v = sessionStorage.getItem('__next_scroll_' + key)
         forcedScroll = JSON.parse(v!)
@@ -106,20 +116,19 @@ export default function App({ Component, pageProps }: AppProps<{ dehydratedState
       if (window.transition) {
         window.transition.skipTransition();
       }
-      const pageMountedPromise: Promise<void> = new Promise(resolve => {
-        window.pageMounted = resolve;
-      })
 
       prepareDirectNavigation({
         href: as,
         singletonRouter,
-        withTrailingSlash: Boolean(process.env.__NEXT_TRAILING_SLASH),
       });
 
       if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height) {
-        isTransitionEnded = true;
         return true;
       }
+
+      const pageMountedPromise: Promise<void> = new Promise(resolve => {
+        window.pageMounted = resolve;
+      })
 
       transitionHelper({
         update: async () => {
@@ -137,19 +146,19 @@ export default function App({ Component, pageProps }: AppProps<{ dehydratedState
       return false;
     });
   }, [router])
-  const [queryClient] = React.useState(() => new QueryClient());
 
   return (
-    <NextQueryGlueProvider singletonRouter={singletonRouter}>
-      <QueryClientProvider client={queryClient}>
-        <HydrationBoundary state={pageProps.dehydratedState} options={{
-          defaultOptions: {},
-        }}>
+    <WithQueryClientProvider>
+      {/* eslint-disable-next-line react/no-unknown-property */}
+      <HydrationBoundary state={pageProps.dehydratedState} options={{
+        defaultOptions: {},
+      }}>
+        <Providers>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </HydrationBoundary>
-      </QueryClientProvider>
-    </NextQueryGlueProvider>
-  );
+        </Providers>
+      </HydrationBoundary>
+    </WithQueryClientProvider>
+  )
 }

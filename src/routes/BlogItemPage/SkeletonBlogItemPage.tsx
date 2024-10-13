@@ -10,14 +10,14 @@ export const SkeletonBlogItemPage: ParentComponent = ({ children }) => {
       <div className="flex flex-col space-y-8 dark:text-gray-50">
         <div className="flex flex-col  space-y-6">
           <SkeletonText as="h1" className="leading-tight text-5xl font-bold" width="65%"/>
-          <div className="relative w-full banner-img">
+          <div className="relative w-full transition-img">
             <SkeletonImage />
           </div>
         </div>
         <div className="dark:text-gray-100">
           <SkeletonDescription />
           <div className="mt-10">
-            <div className="prose lg:prose-xl max-w-none dark:prose-invert flex flex-col">
+            <div className="prose prose-slate lg:prose-xl max-w-none dark:prose-invert flex flex-col">
               <SkeletonText width="65%" as={'h2'} />
               <SkeletonText width="90%"/>
               <SkeletonText width="93%"/>
@@ -30,7 +30,7 @@ export const SkeletonBlogItemPage: ParentComponent = ({ children }) => {
             </div>
           </div>
         </div>
-
+        {children}
       </div>
     </Container>
   );
