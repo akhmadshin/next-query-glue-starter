@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { usePageData } from '@/hooks/usePageData';
 import { BlogItemPageProps } from '@/types/pages/blogItemPage';
 import { ArticleItemApi } from '@/types/api';
@@ -27,7 +27,6 @@ const BlogItemContent = ({ article }: { article: ArticleItemApi }) => {
   const articleAttributes = article.attributes || {};
   const { content } = articleAttributes;
   const ref = useRef<HTMLDivElement>(null);
-  const [isInvisible] = useState(typeof window !== 'undefined');
 
   useEffect(() => {
     if (!article || !ref.current) {

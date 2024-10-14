@@ -12,7 +12,6 @@ import singletonRouter from 'next/dist/client/router';
 import { ParentComponent } from '@/types/general';
 import { ThemeProvider } from 'next-themes';
 import { Layout } from '@/components/Layout';
-import { transitionHelper } from '@/lib/transitionHelper';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 
 

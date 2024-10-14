@@ -1,6 +1,6 @@
 import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export const Page: ParentComponent = ({children}) => {
