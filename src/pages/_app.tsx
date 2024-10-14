@@ -121,7 +121,7 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
         singletonRouter,
       });
 
-      if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height) {
+      if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height || !document.startViewTransition) {
         return true;
       }
 

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 export const Page: ParentComponent = ({children}) => {
   const queryClient = useQueryClient()
   const ref = useRef<HTMLDivElement>(null);
-  const [isInvisible] = useState(typeof window !== 'undefined' && !window.pageMounted);
+  const [isInvisible] = useState((typeof window !== 'undefined' && !window.pageMounted) || (typeof document !== 'undefined' && !document.startViewTransition));
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') {
@@ -25,7 +25,7 @@ export const Page: ParentComponent = ({children}) => {
     <div
       ref={ref}
       className={cn(
-        'transition-opacity ease-in duration-500',
+        'transition-opacity ease-linear duration-500',
         isInvisible ? 'opacity-0' : 'opacity-1'
       )}
     >
