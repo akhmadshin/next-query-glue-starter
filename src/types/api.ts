@@ -1,5 +1,35 @@
 import { BlocksContent } from '@strapi/blocks-react-renderer';
-import { APIResponse, APIResponseCollection, APIResponseData } from '@/types/strapi';
+
+
+export interface APIResponseCollectionPagination {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+}
+export interface APIResponseCollectionMetadata {
+  pagination: APIResponseCollectionPagination;
+}
+
+interface APIIdProperty {
+  id: number;
+}
+export interface APIResponseData<Attributes>
+  extends APIIdProperty {
+  attributes: Attributes;
+}
+
+export interface APIResponse<TContentTypeUID> {
+  data: APIResponseData<TContentTypeUID> | null;
+  meta: object;
+}
+
+export interface APIResponseCollection<
+  TContentTypeUID,
+> {
+  data: APIResponseData<TContentTypeUID>[];
+  meta: APIResponseCollectionMetadata;
+}
 
 export interface Media {
   "thumbhash": string;

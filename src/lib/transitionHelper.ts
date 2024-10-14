@@ -4,7 +4,6 @@ interface Props {
   skipTransition?: boolean;
   classNames?: string[];
   update: () => Promise<void>;
-  types?: string[];
   onFinish?: () => void;
 }
 const transitionFinished = new CustomEvent("transitionFinished", {
@@ -12,17 +11,12 @@ const transitionFinished = new CustomEvent("transitionFinished", {
 });
 
 export function transitionHelper({
-                                   skipTransition = false,
-                                   types = [],
-                                   update,
-                                   onFinish,
-                                 }: Props) {
-  window.isTransitionAvailable = true;
-
+  skipTransition = false,
+  update,
+  onFinish,
+}: Props) {
   if (skipTransition || !document.startViewTransition) {
     const updateCallbackDone = Promise.resolve(update());
-
-
     return {
       ready: Promise.resolve(Error('View transitions unsupported')),
       updateCallbackDone,

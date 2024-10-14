@@ -36,7 +36,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     children,
     ...restProps
   } = props;
-  const localRef = useRef<HTMLImageElement>();
+  const localRef = useRef<HTMLAnchorElement | null>();
   const router = useRouter();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -66,7 +66,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       href={href}
       prefetch={false}
       ref={(node) => {
-        // @ts-ignore
         localRef.current = node;
         if (typeof ref === 'function') {
           ref(node);

@@ -12,7 +12,6 @@ import singletonRouter from 'next/dist/client/router';
 import { ParentComponent } from '@/types/general';
 import { ThemeProvider } from 'next-themes';
 import { Layout } from '@/components/Layout';
-import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 
@@ -87,7 +86,7 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
   const router = useRouter();
 
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     if (!router) {
       return;
     }
@@ -100,12 +99,12 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
     }
   }, []);
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     router.prefetch = async () => Promise.resolve(undefined);
 
     router.beforePopState((props) => {
       const { url, as, options } = props;
-      const key = (props as any).key;
+      const key = (props as unknown as { key: string }).key;
       let forcedScroll = { x: 0, y: 0 };
       try {
         const v = sessionStorage.getItem('__next_scroll_' + key)
@@ -138,9 +137,10 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
         },
       });
       handleTransitionStarted(as);
+      scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'smooth' });
 
       setTimeout(() => {
-        router.replace(url, as, { shallow: options.shallow, locale: options.locale });
+        router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
       }, 13);
 
       return false;

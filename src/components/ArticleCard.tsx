@@ -5,8 +5,7 @@ import { SkeletonArticleCard } from '@/components/skeletons/SkeletonArticleCard'
 import { Image } from '@/components/image';
 import { WithImagePrefetch } from '@/components/image/WithImagePrefetch';
 import { RichText } from '@/components/RichText';
-import { ApiResponseMedia, ArticleListItem } from '@/types/api';
-import { APIResponseData } from '@/types/strapi';
+import { APIResponseData, ApiResponseMedia, ArticleListItem } from '@/types/api';
 
 interface Props {
   article: APIResponseData<ArticleListItem>;
@@ -59,7 +58,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
                 {articleAttributes.title}
               </h3>
               <div className="relative z-10 mt-3 line-clamp-3 text-sm leading-6 text-zinc-600 dark:text-zinc-200">
-                <RichText content={articleAttributes.description} className="prose prose-slate" />
+                <RichText content={articleAttributes.description} className="prose" />
               </div>
             </div>
           </article>

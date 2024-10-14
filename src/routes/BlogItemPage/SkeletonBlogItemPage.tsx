@@ -17,7 +17,7 @@ export const SkeletonBlogItemPage: ParentComponent = ({ children }) => {
         <div className="dark:text-gray-100">
           <SkeletonDescription />
           <div className="mt-10">
-            <div className="prose prose-slate lg:prose-xl max-w-none dark:prose-invert flex flex-col">
+            <div className="prose lg:prose-xl max-w-none dark:prose-invert flex flex-col">
               <SkeletonText width="65%" as={'h2'} />
               <SkeletonText width="90%"/>
               <SkeletonText width="93%"/>

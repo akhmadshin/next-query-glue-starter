@@ -24,6 +24,7 @@ export const ImagePreload = ({
       sizes: sizes,
     }),
     src,
+    alt: '',
     sizes: '100vw',
     loading: 'lazy',
     width: Number(width),

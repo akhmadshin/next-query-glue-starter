@@ -28,7 +28,7 @@ export const BlogItemPrePage: ParentComponent = ({ children }) => {
 
   const articleAttributes = article.attributes || {};
   const coverAttributes = articleAttributes.thumbnail.data!.attributes || {};
-  const {title, description, slug } = articleAttributes;
+  const {title, description } = articleAttributes;
 
   return (
     <Container>
@@ -38,7 +38,7 @@ export const BlogItemPrePage: ParentComponent = ({ children }) => {
       />
       <article className="flex flex-col dark:text-gray-50">
         <div className="flex flex-col space-y-6">
-          <div className="prose prose-slate lg:prose-xl dark:prose-invert max-w-none">
+          <div className="prose lg:prose-xl dark:prose-invert max-w-none">
             <h1>{title}</h1>
           </div>
           <div ref={imgContainerRef}>

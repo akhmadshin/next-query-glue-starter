@@ -9,7 +9,8 @@ export default function Page() {
     <BlogItemPage />
   )
 }
-export const getServerSideProps = withSSRTanStackQuery<ArticleItemApi, { slug: string }>(async ({ params, req }) => {
+
+export const getServerSideProps = withSSRTanStackQuery<ArticleItemApi, { slug: string }>(async ({ params }) => {
   const { slug } = params ?? {};
   try {
     const file = await fs.readFile(path.resolve(`public/mocks/${slug}.json`), 'utf-8')

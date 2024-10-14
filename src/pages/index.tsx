@@ -1,13 +1,13 @@
 import { promises as fs } from 'fs';
 import { HomePage } from '@/routes/HomePage';
 import { withSSRTanStackQuery } from '@/lib/withSSRTanStackQuery';
-import { APIResponseCollection } from '@/types/strapi';
 import path from 'path';
+import { HomePageProps } from '@/types/pages/homePage';
 
-export const getServerSideProps = withSSRTanStackQuery<any>(async ({ req }) => {
+export const getServerSideProps = withSSRTanStackQuery(async () => {
   const file = await fs.readFile(path.resolve(`public/mocks/articles.json`), 'utf-8')
   return {
-    props: JSON.parse(file) as APIResponseCollection<'api::article.article'>
+    props: JSON.parse(file) as HomePageProps
   };
 })
 
