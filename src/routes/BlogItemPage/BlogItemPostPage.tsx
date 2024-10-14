@@ -13,6 +13,7 @@ export const BlogItemPostPage = () => {
     return <BlogItemPostPageLoader />;
   }
 
+  console.log('article = ', article);
   if (!article) {
     return null;
   }
@@ -44,8 +45,7 @@ const BlogItemContent = ({ article }: { article: ArticleItemApi }) => {
     <div
       ref={ref}
       className={cn(
-        'transition-opacity ease-in duration-500',
-        isInvisible ? 'opacity-0' : 'opacity-1',
+        'transition-opacity ease-in duration-500 opacity-0',
       )}
     >
       <RichText content={content}/>

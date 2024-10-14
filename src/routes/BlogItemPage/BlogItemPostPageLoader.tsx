@@ -1,5 +1,6 @@
 export const BlogItemPostPageLoader = () => {
+  console.log('Loading...');
   return (
-    <div className="h-screen"></div>
+    <div className="h-screen">Loading...</div>
   )
 }

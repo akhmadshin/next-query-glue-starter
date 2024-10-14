@@ -15,6 +15,11 @@ import { Layout } from '@/components/Layout';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 
+
+const navigationStarted = new CustomEvent("navigationStarted", {
+  detail: {},
+});
+
 (() => {
   if (typeof window === 'undefined') {
     return;
@@ -105,13 +110,24 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
     router.beforePopState((props) => {
       const { url, as, options } = props;
       const key = (props as unknown as { key: string }).key;
+      document.dispatchEvent(navigationStarted);
+
       let forcedScroll = { x: 0, y: 0 };
+
       try {
-        const v = sessionStorage.getItem('__next_scroll_' + key)
-        forcedScroll = JSON.parse(v!)
+        const v = sessionStorage.getItem('__next_scroll_' + key);
+        forcedScroll = JSON.parse(v!);
       } catch {
-        forcedScroll = { x: 0, y: 0 }
+        forcedScroll = { x: 0, y: 0 };
       }
+
+      setTimeout(() => {
+        router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
+        setTimeout(() => {
+          scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+        }, 40)
+      }, 150);
+
       if (window.transition) {
         window.transition.skipTransition();
       }
@@ -121,27 +137,8 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
         singletonRouter,
       });
 
-      if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height || !document.startViewTransition) {
-        return true;
-      }
 
-      const pageMountedPromise: Promise<void> = new Promise(resolve => {
-        window.pageMounted = resolve;
-      })
 
-      transitionHelper({
-        update: async () => {
-          if (window.pageMounted) {
-            await pageMountedPromise;
-          }
-        },
-      });
-      handleTransitionStarted(as);
-      scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'smooth' });
-
-      setTimeout(() => {
-        router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-      }, 13);
 
       return false;
     });

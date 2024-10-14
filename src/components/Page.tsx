@@ -1,32 +1,40 @@
 import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export const Page: ParentComponent = ({children}) => {
   const queryClient = useQueryClient()
   const ref = useRef<HTMLDivElement>(null);
-  const [isInvisible] = useState((typeof window !== 'undefined' && !window.pageMounted) || (typeof document !== 'undefined' && !document.startViewTransition));
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
+
+    document.addEventListener('navigationStarted', () => {
+      if (!ref.current) {
+        return;
+      }
+      ref.current.className = 'transition-opacity ease-linear duration-150 opacity-0';
+    })
+
     if (!queryClient.isFetching()) {
       window.placeholderData = undefined;
     }
-    if (!ref.current) {
-      return;
-    }
-    ref.current.style.opacity = '1';
+    setTimeout(() => {
+      if (!ref.current || window.transition) {
+        return;
+      }
+      ref.current.className = 'transition-opacity ease-linear duration-300 opacity-1';
+    }, 50)
   }, []);
 
   return (
     <div
       ref={ref}
       className={cn(
-        'transition-opacity ease-linear duration-500',
-        isInvisible ? 'opacity-0' : 'opacity-1'
+        'transition-opacity ease-linear duration-300 opacity-0',
       )}
     >
       {children}

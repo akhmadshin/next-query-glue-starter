@@ -28,6 +28,10 @@ const startPageTransition = () => {
   });
 }
 
+const navigationStarted = new CustomEvent("navigationStarted", {
+  detail: {},
+});
+
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -43,6 +47,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     if (onClick) {
       onClick(e);
     }
+    document.dispatchEvent(navigationStarted);
 
     e.preventDefault();
 
@@ -57,7 +62,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
 
     setTimeout(() => {
       return router.push(href)
-    }, 13)
+    }, !document.startViewTransition ? 150 : 13)
   }
 
   return (
