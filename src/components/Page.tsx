@@ -27,7 +27,7 @@ export const Page: ParentComponent = ({children}) => {
     }
 
     if (window.transition) {
-      ref.current.className = 'transition-opacity ease-linear duration-500 opacity-1';
+      ref.current.className = 'opacity-1';
     }
     setTimeout(() => {
       if (!ref.current) {
