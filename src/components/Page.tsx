@@ -19,7 +19,7 @@ export const Page: ParentComponent = ({children}) => {
       if (!ref.current) {
         return;
       }
-      ref.current.className = 'transition-opacity ease-linear duration-150 opacity-0';
+      ref.current.className = 'transition-opacity ease-in duration-150 opacity-0';
     })
 
     if (!queryClient.isFetching()) {
@@ -27,13 +27,13 @@ export const Page: ParentComponent = ({children}) => {
     }
 
     if (window.transition) {
-      ref.current.className = 'transition-opacity ease-linear duration-300 opacity-1';
+      ref.current.className = 'transition-opacity ease-linear duration-500 opacity-1';
     }
     setTimeout(() => {
       if (!ref.current) {
         return;
       }
-      ref.current!.className = 'transition-opacity ease-linear duration-300 opacity-1';
+      ref.current!.className = 'transition-opacity ease-linear duration-500 opacity-1';
     }, 50)
   }, []);
 
@@ -41,7 +41,7 @@ export const Page: ParentComponent = ({children}) => {
     <div
       ref={ref}
       className={cn(
-        'transition-opacity ease-linear duration-300 opacity-0',
+        'transition-opacity ease-linear duration-500 opacity-0',
       )}
     >
       {children}
