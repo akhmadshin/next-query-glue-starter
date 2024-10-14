@@ -11,6 +11,9 @@ export const Page: ParentComponent = ({children}) => {
     if (typeof window === 'undefined') {
       return;
     }
+    if (!ref.current) {
+      return;
+    }
 
     document.addEventListener('navigationStarted', () => {
       if (!ref.current) {
@@ -22,11 +25,15 @@ export const Page: ParentComponent = ({children}) => {
     if (!queryClient.isFetching()) {
       window.placeholderData = undefined;
     }
+
+    if (window.transition) {
+      ref.current.className = 'transition-opacity ease-linear duration-300 opacity-1';
+    }
     setTimeout(() => {
-      if (!ref.current || window.transition) {
+      if (!ref.current) {
         return;
       }
-      ref.current.className = 'transition-opacity ease-linear duration-300 opacity-1';
+      ref.current!.className = 'transition-opacity ease-linear duration-300 opacity-1';
     }, 50)
   }, []);
 
