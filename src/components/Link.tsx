@@ -4,6 +4,7 @@ import { prepareDirectNavigation } from 'next-query-glue';
 import singletonRouter, { useRouter } from 'next/router';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { handleTransitionStarted } from '@/pages/_app';
+import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
@@ -28,10 +29,6 @@ const startPageTransition = () => {
   });
 }
 
-const navigationStarted = new CustomEvent("navigationStarted", {
-  detail: {},
-});
-
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -47,7 +44,10 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     if (onClick) {
       onClick(e);
     }
-    document.dispatchEvent(navigationStarted);
+
+    if (!document.startViewTransition) {
+      document.dispatchEvent(fadeTransitionStartedEvent);
+    }
 
     e.preventDefault();
 

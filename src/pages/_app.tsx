@@ -15,11 +15,7 @@ import { Layout } from '@/components/Layout';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { WithFadeTransition } from '@/components/WithFadeTransition';
-
-
-const navigationStarted = new CustomEvent("navigationStarted", {
-  detail: {},
-});
+import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -111,7 +107,6 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
     router.beforePopState((props) => {
       const { url, as, options } = props;
       const key = (props as unknown as { key: string }).key;
-      document.dispatchEvent(navigationStarted);
 
       let forcedScroll = { x: 0, y: 0 };
 
@@ -132,6 +127,8 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
       }
 
       if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height || !document.startViewTransition) {
+        document.dispatchEvent(fadeTransitionStartedEvent);
+
         setTimeout(async () => {
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
           scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });

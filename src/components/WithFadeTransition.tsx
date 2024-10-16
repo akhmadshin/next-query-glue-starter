@@ -16,10 +16,10 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
     ref.current.className = 'transition-opacity ease-linear duration-150 opacity-0';
   }
   useEffect(() => {
-    document.addEventListener('navigationStarted', handleTransitionStarted);
+    document.addEventListener('fadeTransitionStarted', handleTransitionStarted);
 
     return () => {
-      document.removeEventListener('navigationStarted', handleTransitionStarted);
+      document.removeEventListener('fadeTransitionStarted', handleTransitionStarted);
     }
   }, [])
 
