@@ -61,7 +61,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     startPageTransition();
 
     setTimeout(() => {
-      return router.push(href)
+      return router.push(href);
     }, !document.startViewTransition ? 150 : 13)
   }
 

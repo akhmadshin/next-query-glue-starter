@@ -13,6 +13,8 @@ import { ParentComponent } from '@/types/general';
 import { ThemeProvider } from 'next-themes';
 import { Layout } from '@/components/Layout';
 import { createRouteLoader } from 'next/dist/client/route-loader';
+import { transitionHelper } from '@/lib/transitionHelper';
+import { WithFadeTransition } from '@/components/WithFadeTransition';
 
 
 const navigationStarted = new CustomEvent("navigationStarted", {
@@ -120,24 +122,40 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
         forcedScroll = { x: 0, y: 0 };
       }
 
-      setTimeout(() => {
-        router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-        setTimeout(() => {
-          scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
-        }, 40)
-      }, 150);
-
-      if (window.transition) {
-        window.transition.skipTransition();
-      }
-
       prepareDirectNavigation({
         href: as,
         singletonRouter,
       });
 
+      if (window.transition) {
+        window.transition.skipTransition();
+      }
 
+      if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height || !document.startViewTransition) {
+        setTimeout(async () => {
+          await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
+          scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+        }, 150);
+        return false;
+      }
 
+      const pageMountedPromise: Promise<void> = new Promise(resolve => {
+        window.pageMounted = resolve;
+      })
+
+      transitionHelper({
+        update: async () => {
+          if (window.pageMounted) {
+            await pageMountedPromise;
+          }
+        },
+      });
+      handleTransitionStarted(as);
+
+      setTimeout(async () => {
+        await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
+        scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+      }, 13);
 
       return false;
     });
@@ -151,7 +169,9 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
       }}>
         <Providers>
           <Layout>
-            <Component {...pageProps} />
+            <WithFadeTransition>
+              <Component {...pageProps} />
+            </WithFadeTransition>
           </Layout>
         </Providers>
       </HydrationBoundary>
