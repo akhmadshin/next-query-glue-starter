@@ -7,12 +7,20 @@ import { usePageData } from '@/hooks/usePageData';
 import { HomePageProps } from '@/types/pages/homePage';
 import { Page } from '@/components/Page';
 
-const title = 'Next.js starter with fastest navigation possible.';
+const title = 'Next.js starter with best navigation experience possible.';
 const description = 'That next.js starter demonstrates consistently fast navigation via optimistic UI. Navigation stays responsive regardless of the Internet speed or CPU performance.';
 
 export const HomePage = () => {
   const { data: articles, isLoading, isFetching} = usePageData<HomePageProps>();
 
+  const features = [
+    'Optimistic navigation',
+    'View transitions (supports back/forward)',
+    'Fallback for browsers that dont have view transition api',
+    'SWR caching',
+    'Image preloading',
+    'Scroll restoration',
+  ]
   return (
     <Page>
       <Container>
@@ -24,14 +32,21 @@ export const HomePage = () => {
           <h1>
             {title}
           </h1>
+
+          <code>
+            Powered by <a href="https://github.com/akhmadshin/next-query-glue"
+                          target="_blank">next-query-glue</a> and <a
+            href="https://github.com/TanStack/query" target="_blank">react-query</a>.
+          </code>
+          <ul>
+            {features.map((feature, i) => (
+              <li key={i}>{feature}</li>
+            ))}
+          </ul>
           <p>
             {description}{' '}
             Click on any card below to see it.
           </p>
-          <code>
-            Powered by <a href="https://github.com/akhmadshin/next-query-glue" target="_blank">next-query-glue</a> and <a
-            href="https://github.com/TanStack/query" target="_blank">react-query</a>.
-          </code>
         </div>
         <ArticleList articles={articles} isLoading={isLoading || isFetching}/>
       </Container>
