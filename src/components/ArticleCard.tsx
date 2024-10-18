@@ -26,7 +26,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
   return (
     <div ref={containerRef}>
       <WithImagePrefetch
-        src={coverAttributes.name}
+        src={`/${coverAttributes.name}`}
         height={coverAttributes.height}
         width={coverAttributes.width}
         prefetchSize="100vw"
