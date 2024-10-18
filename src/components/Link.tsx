@@ -5,6 +5,7 @@ import singletonRouter, { useRouter } from 'next/router';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { handleTransitionStarted } from '@/pages/_app';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
+import { FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
@@ -41,28 +42,33 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
   const router = useRouter();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
     if (onClick) {
       onClick(e);
     }
 
-    if (!document.startViewTransition) {
-      document.dispatchEvent(fadeTransitionStartedEvent);
-    }
-
-    e.preventDefault();
-
-    handleTransitionStarted(href as string);
     prepareDirectNavigation({
       href,
       singletonRouter,
     });
     window.placeholderData = placeholderData;
 
+    if (!document.startViewTransition) {
+      document.dispatchEvent(fadeTransitionStartedEvent);
+      setTimeout(() => {
+        return router.push(href);
+      }, FADE_IN_DURATION)
+      return;
+    }
+
+    handleTransitionStarted(href as string);
+
     startPageTransition();
 
     setTimeout(() => {
       return router.push(href);
-    }, !document.startViewTransition ? 150 : 13)
+    }, 16);
   }
 
   return (

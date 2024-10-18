@@ -2,20 +2,18 @@ import '@/styles/globals.css'
 import '@/styles/view-transitions.css'
 
 import type { DehydratedState } from '@tanstack/react-query';
-import { HydrationBoundary } from '@tanstack/react-query'
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import type { AppProps } from 'next/app';
-import WithQueryClientProvider from '@/components/WithQueryClientProvider';
 import { useRouter } from 'next/router';
-import { NextQueryGlueProvider, prepareDirectNavigation } from 'next-query-glue';
+import { prepareDirectNavigation } from 'next-query-glue';
 import singletonRouter from 'next/dist/client/router';
-import { ParentComponent } from '@/types/general';
-import { ThemeProvider } from 'next-themes';
 import { Layout } from '@/components/Layout';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { WithFadeTransition } from '@/components/WithFadeTransition';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
+import { Providers } from '@/components/Providers';
+import { FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -25,25 +23,6 @@ import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
   routeLoader.loadRoute('/').catch((e: string) => { throw new Error(e) });
   routeLoader.loadRoute('/blog/[slug]').catch((e: string) => { throw new Error(e) });
 })();
-
-const Providers: ParentComponent = ({ children }) => {
-  const pathModifier = useCallback((route: string) => {
-    return route;
-  }, []);
-
-  return (
-    <NextQueryGlueProvider singletonRouter={singletonRouter} pathModifier={pathModifier}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        {children}
-      </ThemeProvider>
-    </NextQueryGlueProvider>
-  );
-}
 
 export const handleTransitionStarted = (href: string) => {
   const clickedLink = document.querySelector<HTMLImageElement>(`a[href$='${href}']`);
@@ -84,7 +63,7 @@ const handleRouteChangeComplete = () => {
 }
 
 
-export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState: DehydratedState}>) {
+export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
 
 
@@ -132,7 +111,7 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
         setTimeout(async () => {
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
           scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
-        }, 150);
+        }, FADE_IN_DURATION);
         return false;
       }
 
@@ -159,19 +138,12 @@ export default function MyApp({Component, pageProps}: AppProps<{ dehydratedState
   }, [router])
 
   return (
-    <WithQueryClientProvider>
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <HydrationBoundary state={pageProps.dehydratedState} options={{
-        defaultOptions: {},
-      }}>
-        <Providers>
-          <Layout>
-            <WithFadeTransition>
-              <Component {...pageProps} />
-            </WithFadeTransition>
-          </Layout>
-        </Providers>
-      </HydrationBoundary>
-    </WithQueryClientProvider>
+    <Providers dehydratedState={pageProps.dehydratedState}>
+      <Layout>
+        <WithFadeTransition>
+          <Component {...pageProps} />
+        </WithFadeTransition>
+      </Layout>
+    </Providers>
   )
 }

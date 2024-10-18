@@ -21,8 +21,10 @@
     "next": "14.2.15",
     "next-query-glue": "^0.0.4",
     "next-themes": "^0.3.0",
+    "prismjs": "^1.29.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-lite-youtube-embed": "^2.4.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "thumbhash": "^0.1.1"
