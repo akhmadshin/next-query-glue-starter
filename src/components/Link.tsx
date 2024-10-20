@@ -58,7 +58,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       document.dispatchEvent(fadeTransitionStartedEvent);
       setTimeout(() => {
         return router.push(href);
-      }, FADE_IN_DURATION)
+      }, FADE_IN_DURATION - 25)
       return;
     }
 

@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { NextQueryGlueProvider } from 'next-query-glue';
 import singletonRouter from 'next/dist/client/router';
 import { ThemeProvider } from 'next-themes';
-import WithQueryClientProvider from '@/components/WithQueryClientProvider';
+import WithQueryClientProvider from '@/hocs/WithQueryClientProvider';
 import { type DehydratedState, HydrationBoundary } from '@tanstack/react-query';
 
 interface Props {

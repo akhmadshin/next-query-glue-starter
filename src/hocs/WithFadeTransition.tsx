@@ -1,8 +1,8 @@
 import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
 import { useRouter } from 'next/router';
+import { FADE_IN_DURATION, FADE_IN_OPACITY, FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 
 export const WithFadeTransition: ParentComponent = ({ children }) => {
   const queryClient = useQueryClient()
@@ -13,7 +13,8 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
     if (!ref.current) {
       return;
     }
-    ref.current.className = 'transition-opacity ease-linear duration-150 opacity-0';
+    ref.current.style.transitionDuration = String(FADE_IN_DURATION);
+    ref.current.style.opacity = String(FADE_IN_OPACITY);
   }
   useEffect(() => {
     document.addEventListener('fadeTransitionStarted', handleTransitionStarted);
@@ -37,22 +38,26 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
     }
 
     if (window.transition) {
-      ref.current.className = 'opacity-1';
+      ref.current.style.removeProperty('transition-duration');
+      ref.current.style.opacity = String(1);
     }
     setTimeout(() => {
       if (!ref.current) {
         return;
       }
-      ref.current!.className = 'transition-opacity ease-linear duration-500 opacity-1';
+      ref.current.style.transitionDuration = String(FADE_OUT_DURATION);
+      ref.current.style.opacity = String(1);
     }, 50)
   }, [router.pathname, router.query]);
 
   return (
     <div
       ref={ref}
-      className={cn(
-        'transition-opacity ease-linear duration-500 opacity-0',
-      )}
+      style={{
+        transitionDuration: String(FADE_OUT_DURATION),
+        opacity: 0,
+      }}
+      className={"transition-opacity ease-linear"}
     >
       {children}
     </div>

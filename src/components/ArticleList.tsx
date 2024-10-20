@@ -10,7 +10,7 @@ interface Props {
   isLoading?: boolean;
 }
 
-const ArticleCards: Component<Props> = ({ articles, isLoading }) => {
+const ArticleListContent: Component<Props> = ({ articles, isLoading }) => {
   if (!articles && isLoading) {
     return (
       <>
@@ -37,7 +37,7 @@ export const ArticleList: Component<Props> = ({ articles, isLoading }) => {
   return (
     <div className="mt-16">
       <div className="grid sm:grid-cols-2 gap-x-8 gap-y-12">
-        <ArticleCards articles={articles} isLoading={isLoading} />
+        <ArticleListContent articles={articles} isLoading={isLoading} />
       </div>
     </div>
   )
