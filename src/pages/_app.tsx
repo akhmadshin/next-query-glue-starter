@@ -13,7 +13,7 @@ import { transitionHelper } from '@/lib/transitionHelper';
 import { WithFadeTransition } from '@/hocs/WithFadeTransition';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { Providers } from '@/components/Providers';
-import { FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
+import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -111,7 +111,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         setTimeout(async () => {
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
           scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
-        }, FADE_IN_DURATION - 25);
+        }, FADE_OUT_DURATION - 25);
         return false;
       }
 

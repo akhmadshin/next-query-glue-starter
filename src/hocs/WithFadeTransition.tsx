@@ -1,8 +1,8 @@
 import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { FADE_IN_DURATION, FADE_IN_OPACITY, FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
+import { FADE_OUT_DURATION, FADE_IN_OPACITY, FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
 
 export const WithFadeTransition: ParentComponent = ({ children }) => {
   const queryClient = useQueryClient()
@@ -13,9 +13,10 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
     if (!ref.current) {
       return;
     }
-    ref.current.style.transitionDuration = String(FADE_IN_DURATION);
-    ref.current.style.opacity = String(FADE_IN_OPACITY);
+    ref.current!.style.setProperty('transition-duration', `${FADE_OUT_DURATION}ms`);
+    ref.current!.style.opacity = String(0);
   }
+
   useEffect(() => {
     document.addEventListener('fadeTransitionStarted', handleTransitionStarted);
 
@@ -24,38 +25,39 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
     }
   }, [])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
+  useLayoutEffect(() => {
     if (!ref.current) {
       return;
     }
+    ref.current.style.opacity = String(FADE_IN_OPACITY);
+    ref.current.style.removeProperty('transition-duration');
+  }, [router.pathname, router.query]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !ref.current) {
+      return;
+    }
 
     if (!queryClient.isFetching()) {
       window.placeholderData = undefined;
     }
 
     if (window.transition) {
+      ref.current.style.opacity = String(1);
       ref.current.style.removeProperty('transition-duration');
-      ref.current.style.opacity = String(1);
+      return;
     }
-    setTimeout(() => {
-      if (!ref.current) {
-        return;
-      }
-      ref.current.style.transitionDuration = String(FADE_OUT_DURATION);
-      ref.current.style.opacity = String(1);
-    }, 50)
+
+    ref.current!.style.opacity = String(1);
+    ref.current!.style.setProperty('transition-duration', `${FADE_IN_DURATION}ms`);
   }, [router.pathname, router.query]);
 
   return (
     <div
       ref={ref}
       style={{
-        transitionDuration: String(FADE_OUT_DURATION),
-        opacity: 0,
+        transitionDuration: `${FADE_IN_DURATION}ms`,
+        opacity: String(FADE_IN_OPACITY),
       }}
       className={"transition-opacity ease-linear"}
     >

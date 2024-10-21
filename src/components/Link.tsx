@@ -5,7 +5,7 @@ import singletonRouter, { useRouter } from 'next/router';
 import { transitionHelper } from '@/lib/transitionHelper';
 import { handleTransitionStarted } from '@/pages/_app';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
-import { FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
+import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
@@ -58,7 +58,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       document.dispatchEvent(fadeTransitionStartedEvent);
       setTimeout(() => {
         return router.push(href);
-      }, FADE_IN_DURATION - 25)
+      }, FADE_OUT_DURATION - 25)
       return;
     }
 
