@@ -10,17 +10,18 @@ import { Page } from '@/components/Page';
 const title = 'Next.js starter with best navigation experience possible.';
 const description = 'That next.js starter demonstrates consistently fast navigation via optimistic UI. Navigation stays responsive regardless of the Internet speed or CPU performance.';
 
+const features = [
+  'Optimistic navigation',
+  'View transitions (supports back/forward)',
+  'Fallback for browsers that dont have view transition api',
+  'SWR caching',
+  'Image preloading',
+  'Scroll restoration',
+];
+
 export const HomePage = () => {
   const { data: articles, isLoading, isFetching} = usePageData<HomePageProps>();
 
-  const features = [
-    'Optimistic navigation',
-    'View transitions (supports back/forward)',
-    'Fallback for browsers that dont have view transition api',
-    'SWR caching',
-    'Image preloading',
-    'Scroll restoration',
-  ]
   return (
     <Page>
       <Container>

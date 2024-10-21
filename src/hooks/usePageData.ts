@@ -8,8 +8,7 @@ export const usePageData = <T>() => {
   const queryKey = [getQueryKey(router)]
   const placeholderData = typeof window === 'undefined' ? undefined : window.placeholderData;
 
-
-  const res =  useQuery<unknown, unknown, T>({
+  return  useQuery<unknown, unknown, T>({
     staleTime: Infinity,
     gcTime: Infinity,
     structuralSharing: false,
@@ -22,5 +21,4 @@ export const usePageData = <T>() => {
     },
     placeholderData,
   });
-  return res;
 }
