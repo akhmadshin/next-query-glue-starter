@@ -55,10 +55,6 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
   return (
     <div
       ref={ref}
-      style={{
-        transitionDuration: `${FADE_IN_DURATION}ms`,
-        opacity: String(FADE_IN_OPACITY),
-      }}
       className={"transition-opacity ease-linear"}
     >
       {children}
