@@ -6,7 +6,6 @@ import { ThemeSwitch } from '@/components/ThemeSwitch';
 import { useRouter } from 'next/router';
 import { cn } from '@/lib/utils';
 import { GithubIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export function Header() {
   const navClassName = 'flex items-center space-x-6';
