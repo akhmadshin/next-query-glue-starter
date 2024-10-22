@@ -5,9 +5,11 @@ import { Container } from '@/components/Container';
 import { ThemeSwitch } from '@/components/ThemeSwitch';
 import { useRouter } from 'next/router';
 import { cn } from '@/lib/utils';
+import { GithubIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function Header() {
-  const navClassName = 'flex items-center gap-4 md:gap-6 lg:gap-12';
+  const navClassName = 'flex items-center space-x-6';
   const router = useRouter();
 
   return (
@@ -30,7 +32,11 @@ export function Header() {
               </div>
             </Link>
           </div>
+
           <div className={navClassName}>
+            <a href="https://github.com/akhmadshin/next-query-glue-starter" target="_blank">
+              <GithubIcon className="h-[1.2rem] w-[1.2rem]" />
+            </a>
             <ThemeSwitch />
           </div>
         </div>

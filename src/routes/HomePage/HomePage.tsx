@@ -11,9 +11,9 @@ const title = 'Next.js starter with best navigation experience possible.';
 const description = 'That next.js starter demonstrates consistently fast navigation via optimistic UI. Navigation stays responsive regardless of the Internet speed or CPU performance.';
 
 const features = [
-  'Optimistic navigation',
-  'View transitions (supports back/forward)',
-  'Fallback for browsers that dont have view transition api',
+  'Fast navigation via optimistic UI (optimistic navigation)',
+  'View transitions API (supports back/forward)',
+  'Fallback for browsers without View transitions API',
   'SWR caching',
   'Image preloading',
   'Scroll restoration',
@@ -37,7 +37,7 @@ export const HomePage = () => {
           <code>
             Powered by <a href="https://github.com/akhmadshin/next-query-glue"
                           target="_blank">next-query-glue</a> and <a
-            href="https://github.com/TanStack/query" target="_blank">react-query</a>.
+            href="https://github.com/TanStack/query" target="_blank">TanStack Query</a>.
           </code>
           <ul>
             {features.map((feature, i) => (
