@@ -1,6 +1,6 @@
 import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { FADE_OUT_DURATION, FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
 
