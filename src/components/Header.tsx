@@ -12,9 +12,9 @@ export function Header() {
   const router = useRouter();
 
   return (
-    <header>
-      <Container className="main-header">
-        <div className="flex justify-between items-center flex-1 pt-6 gap-6">
+    <header className="main-header sticky top-0 z-50 dark:bg-neutral-900 bg-neutral-50 border solid">
+      <Container className="">
+        <div className="flex justify-between items-center flex-1 gap-6 h-16">
           <div className={navClassName}>
             <Link
               className={cn(

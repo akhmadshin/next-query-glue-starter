@@ -2,7 +2,7 @@ import type { ParentComponent } from '@/types/general';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { FADE_OUT_DURATION, FADE_IN_OPACITY, FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
+import { FADE_OUT_DURATION, FADE_IN_DURATION } from '@/constants/FADE_TRANSITION';
 
 export const WithFadeTransition: ParentComponent = ({ children }) => {
   const queryClient = useQueryClient()
@@ -24,14 +24,6 @@ export const WithFadeTransition: ParentComponent = ({ children }) => {
       document.removeEventListener('fadeTransitionStarted', handleTransitionStarted);
     }
   }, [])
-
-  useLayoutEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-    ref.current.style.opacity = String(FADE_IN_OPACITY);
-    ref.current.style.removeProperty('transition-duration');
-  }, [router.pathname, router.query]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !ref.current) {
