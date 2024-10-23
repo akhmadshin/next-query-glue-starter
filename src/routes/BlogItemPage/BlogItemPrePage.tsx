@@ -18,7 +18,6 @@ export const BlogItemPrePage: ParentComponent = ({ children }) => {
     return (
       <SkeletonBlogItemPage>
         <BlogItemPostPageLoader />
-        {children}
       </SkeletonBlogItemPage>
     );
   }

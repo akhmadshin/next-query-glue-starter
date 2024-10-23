@@ -110,7 +110,15 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
 
         setTimeout(async () => {
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-          scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+
+          // Waiting 1 tick for document to update
+          setTimeout(() => {
+            const scrollMaxY = document.documentElement.scrollHeight - document.documentElement.clientHeight + 1;
+            if (!forcedScroll || forcedScroll.y > scrollMaxY) {
+              forcedScroll = { x: 0, y: 0 };
+            }
+            scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+          }, 0);
         }, FADE_OUT_DURATION - 25);
         return false;
       }
