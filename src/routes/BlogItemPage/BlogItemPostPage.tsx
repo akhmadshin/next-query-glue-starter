@@ -13,7 +13,6 @@ export const BlogItemPostPage = () => {
     return <BlogItemPostPageLoader />;
   }
 
-  console.log('article = ', article);
   if (!article) {
     return null;
   }
