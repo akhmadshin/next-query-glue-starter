@@ -21,8 +21,8 @@
     "next": "^15.0.0",
     "next-query-glue": "^0.0.5",
     "next-themes": "^0.3.0",
-    "react": "19.0.0-rc-65a56d0e-20241020",
-    "react-dom": "19.0.0-rc-65a56d0e-20241020",
+    "react": "^18",
+    "react-dom": "^18",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "thumbhash": "^0.1.1"
