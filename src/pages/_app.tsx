@@ -14,6 +14,7 @@ import { WithFadeTransition } from '@/hocs/WithFadeTransition';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { Providers } from '@/components/Providers';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
+import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -113,11 +114,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
 
           // Waiting 1 tick for document to update
           setTimeout(() => {
-            const scrollMaxY = document.documentElement.scrollHeight - document.documentElement.clientHeight + 1;
-            if (!forcedScroll || forcedScroll.y > scrollMaxY) {
-              forcedScroll = { x: 0, y: 0 };
-            }
-            scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+            scrollToWithYCheck(forcedScroll);
           }, 0);
         }, FADE_OUT_DURATION - 25);
         return false;
@@ -138,7 +135,10 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
 
       setTimeout(async () => {
         await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-        scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'instant' });
+        // Waiting 1 tick for document to update
+        setTimeout(() => {
+          scrollToWithYCheck(forcedScroll);
+        }, 0);
       }, 13);
 
       return false;
