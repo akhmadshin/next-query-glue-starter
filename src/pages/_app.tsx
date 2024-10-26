@@ -63,6 +63,39 @@ const handleRouteChangeComplete = () => {
   }
 }
 
+const handleHashChangeStart = () => {
+  if (window.transition) {
+    window.transition.skipTransition();
+  }
+}
+
+const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
+  console.log('currentAsPath = ', currentAsPath);
+  console.log('newAsPath = ', newAsPath);
+  if (!currentAsPath) return false
+  const [oldUrlNoHash, oldHash] = currentAsPath.split('#', 2)
+  const [newUrlNoHash, newHash] = newAsPath.split('#', 2)
+
+  // Makes sure we scroll to the provided hash if the url/hash are the same
+  if (newHash && oldUrlNoHash === newUrlNoHash && oldHash === newHash) {
+    return true
+  }
+
+  // If the urls are change, there's more than a hash change
+  if (oldUrlNoHash !== newUrlNoHash) {
+    return false
+  }
+
+  if (typeof oldHash === 'undefined' && typeof newHash === 'undefined') {
+    return true;
+  }
+
+  // If the hash has changed, then it's a hash only change.
+  // This check is necessary to handle both the enter and
+  // leave hash === '' cases. The identity case falls through
+  // and is treated as a next reload.
+  return oldHash !== newHash
+}
 
 export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
@@ -73,11 +106,11 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       return;
     }
     router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    router.events.on('hashChangeStart', handleHashChangeStart);
 
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method:
     return () => {
       router.events.off('routeChangeComplete', handleRouteChangeComplete);
+      router.events.off('hashChangeStart', handleHashChangeStart);
     }
   }, []);
 
@@ -85,6 +118,10 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
     router.prefetch = async () => Promise.resolve(undefined);
 
     router.beforePopState((props) => {
+      if (window.transition) {
+        window.transition.skipTransition();
+      }
+
       const { url, as, options } = props;
       const key = (props as unknown as { key: string }).key;
 
@@ -97,21 +134,35 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         forcedScroll = { x: 0, y: 0 };
       }
 
+      const [, newHash] = as.split('#', 2);
+      const isOnlyAHashChange = onlyAHashChange(router.asPath, as);
+      if (isOnlyAHashChange) {
+        if (!newHash) {
+          scrollTo({ top: forcedScroll.y, left: forcedScroll.x, behavior: 'smooth' });
+          return false;
+        }
+        const target = document.querySelector(`#${newHash}`);
+        if (!target) {
+          return false;
+        }
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        return false;
+      }
+
       prepareDirectNavigation({
         href: as,
         singletonRouter,
       });
 
-      if (window.transition) {
-        window.transition.skipTransition();
-      }
-
       if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height || !document.startViewTransition) {
         document.dispatchEvent(fadeTransitionStartedEvent);
 
         setTimeout(async () => {
+          forcedScroll = forcedScroll ?? { x: 0, y: 0 };
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-
           // Waiting 1 tick for document to update
           setTimeout(() => {
             scrollToWithYCheck(forcedScroll);
@@ -124,22 +175,26 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         window.pageMounted = resolve;
       })
 
-      transitionHelper({
-        update: async () => {
-          if (window.pageMounted) {
-            await pageMountedPromise;
-          }
-        },
-      });
-      handleTransitionStarted(as);
+      // Next tick
+      setTimeout(() => {
+        transitionHelper({
+          update: async () => {
+            if (window.pageMounted) {
+              await pageMountedPromise;
+            }
+          },
+        });
+        handleTransitionStarted(as);
+        setTimeout(async () => {
+          await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
+          // Waiting 1 tick for document to update
+          setTimeout(() => {
+            scrollToWithYCheck(forcedScroll);
+          }, 0);
+        }, 13);
+      })
 
-      setTimeout(async () => {
-        await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-        // Waiting 1 tick for document to update
-        setTimeout(() => {
-          scrollToWithYCheck(forcedScroll);
-        }, 0);
-      }, 13);
+
 
       return false;
     });
