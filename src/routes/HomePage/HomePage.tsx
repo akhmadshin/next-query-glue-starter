@@ -39,18 +39,22 @@ export const HomePage = () => {
                           target="_blank">next-query-glue</a> and <a
             href="https://github.com/TanStack/query" target="_blank">TanStack Query</a>.
           </code>
-          <ul>
-            {features.map((feature, i) => (
-              <li key={i}>{feature}</li>
-            ))}
-          </ul>
+
           <p>
             {description}{' '}
             Click on any card below to see it.
           </p>
         </div>
         <ArticleList articles={articles} isLoading={isLoading || isFetching}/>
+        <div className="prose lg:prose-xl dark:prose-invert max-w-2xl pt-20">
+          <h2>Features:</h2>
+          <ul>
+            {features.map((feature, i) => (
+              <li key={i}>{feature}</li>
+            ))}
+          </ul>
+        </div>
       </Container>
     </Page>
-  );
+);
 }

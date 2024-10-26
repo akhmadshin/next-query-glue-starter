@@ -52,11 +52,16 @@ export type ArticleListItem = {
   thumbnail: ApiResponseMedia;
 }
 
+export interface Heading {
+  title: string;
+  hash: string;
+}
 export type ArticleItem = {
   title: string;
   slug: string;
   description: BlocksContent;
   content: BlocksContent;
+  headings: Heading[];
   thumbnail: APIResponse<Media>;
 }
 

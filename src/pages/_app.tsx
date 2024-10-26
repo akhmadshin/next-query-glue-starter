@@ -153,7 +153,6 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       }
 
       prepareDirectNavigation({
-        href: as,
         singletonRouter,
       });
 

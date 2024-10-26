@@ -49,7 +49,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     }
 
     prepareDirectNavigation({
-      href,
       singletonRouter,
     });
     window.placeholderData = placeholderData;
@@ -75,6 +74,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     <NextLink
       onClick={handleClick}
       href={href}
+      scroll={false}
       prefetch={false}
       ref={(node) => {
         localRef.current = node;
