@@ -1,7 +1,7 @@
 import { DehydratedState, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { getQueryKey, getQueryFn } from 'next-query-glue';
-import singletonRouter from 'next/dist/client/router';
+import singletonRouter from 'next/router';
 
 export const usePageData = <T>() => {
   const router = useRouter();

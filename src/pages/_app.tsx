@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { prepareDirectNavigation } from 'next-query-glue';
-import singletonRouter from 'next/dist/client/router';
+import singletonRouter from 'next/router';
 import { Layout } from '@/components/Layout';
 import { createRouteLoader } from 'next/dist/client/route-loader';
 import { transitionHelper } from '@/lib/transitionHelper';
@@ -70,8 +70,6 @@ const handleHashChangeStart = () => {
 }
 
 const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
-  console.log('currentAsPath = ', currentAsPath);
-  console.log('newAsPath = ', newAsPath);
   if (!currentAsPath) return false
   const [oldUrlNoHash, oldHash] = currentAsPath.split('#', 2)
   const [newUrlNoHash, newHash] = newAsPath.split('#', 2)
@@ -97,9 +95,17 @@ const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
   return oldHash !== newHash
 }
 
+function isElementVisible (el: HTMLElement) {
+  const rect = el.getBoundingClientRect();
+  return (
+    Math.abs(rect.top) <= rect.height &&
+    Math.abs(rect.left) <= rect.width &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+  );
+}
 export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
-
 
   useEffect(() => {
     if (!router) {
@@ -121,9 +127,14 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       if (window.transition) {
         window.transition.skipTransition();
       }
-
       const { url, as, options } = props;
       const key = (props as unknown as { key: string }).key;
+
+      let viewTransitionScroll = undefined;
+      try {
+        const v = sessionStorage.getItem('__view_transition_scroll_' + key)
+        viewTransitionScroll = JSON.parse(v!)
+      } catch {}
 
       let forcedScroll = { x: 0, y: 0 };
 
@@ -133,7 +144,11 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       } catch {
         forcedScroll = { x: 0, y: 0 };
       }
-
+      let isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
+      if (typeof isViewTransitionAvailable === 'undefined') {
+        const link = Array.from(document.querySelectorAll<HTMLAnchorElement>(`[href='${as}']`)).find(l => isElementVisible(l));
+        isViewTransitionAvailable = Boolean(link);
+      }
       const [, newHash] = as.split('#', 2);
       const isOnlyAHashChange = onlyAHashChange(router.asPath, as);
       if (isOnlyAHashChange) {
@@ -156,7 +171,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         singletonRouter,
       });
 
-      if (window.scrollY > window.screen.height || (forcedScroll?.y || 0) > window.screen.height || !document.startViewTransition) {
+      if (!isViewTransitionAvailable || !document.startViewTransition) {
         document.dispatchEvent(fadeTransitionStartedEvent);
 
         setTimeout(async () => {
@@ -192,9 +207,6 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
           }, 0);
         }, 13);
       })
-
-
-
       return false;
     });
   }, [router])

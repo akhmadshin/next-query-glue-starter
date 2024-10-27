@@ -56,6 +56,13 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     if (!document.startViewTransition) {
       document.dispatchEvent(fadeTransitionStartedEvent);
       setTimeout(() => {
+        try {
+          // Snapshot scroll position right before navigating to a new page:
+          // sessionStorage.setItem(
+          //   '__next_vi_' + singletonRouter._key,
+          //   JSON.stringify({ x: self.pageXOffset, y: self.pageYOffset })
+          // )
+        } catch {}
         return router.push(href);
       }, FADE_OUT_DURATION - 25)
       return;
@@ -66,6 +73,15 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     startPageTransition();
 
     setTimeout(() => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        const viewTransitionScrollKey = '__view_transition_scroll_' + singletonRouter.router!._key
+        sessionStorage.setItem(
+          viewTransitionScrollKey,
+          JSON.stringify({ x: pageXOffset, y: pageYOffset })
+        )
+      } catch {}
       return router.push(href);
     }, 16);
   }
