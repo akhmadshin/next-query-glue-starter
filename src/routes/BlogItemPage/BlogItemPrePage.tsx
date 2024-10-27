@@ -42,7 +42,7 @@ export const BlogItemPrePage: ParentComponent = ({ children }) => {
           </div>
           <div ref={imgContainerRef}>
             <Image
-              className="lg:aspect-[16/9] aspect-[4/3] transition-img"
+              className="lg:aspect-[16/9] aspect-[4/3] transition-img transitionable-img"
               priority
               sizes="100vw"
               src={`/${coverAttributes.name}`}

@@ -146,11 +146,15 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         window.transition.skipTransition();
       }
       let isViewTransitionAvailable = undefined;
+      let isTransitionImageVisible = false;
       let forcedScroll = { x: 0, y: 0 };
 
       const { url, as, options } = props;
       flushSync(() => {
         const key = (props as unknown as { key: string }).key;
+
+        const transitionableImg = Array.from(document.querySelectorAll<HTMLAnchorElement>(`.transitionable-img`)).find(l => isElementVisible(l));
+        isTransitionImageVisible = Boolean(transitionableImg);
 
         let viewTransitionScroll = undefined;
         try {
@@ -193,7 +197,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         singletonRouter,
       });
 
-      if (!isViewTransitionAvailable || !document.startViewTransition) {
+      if (!isTransitionImageVisible || !isViewTransitionAvailable || !document.startViewTransition) {
         document.dispatchEvent(fadeTransitionStartedEvent);
 
         setTimeout(async () => {
