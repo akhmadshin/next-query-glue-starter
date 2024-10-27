@@ -15,6 +15,7 @@ import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { Providers } from '@/components/Providers';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
+import { flushSync } from 'react-dom';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -127,28 +128,32 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       if (window.transition) {
         window.transition.skipTransition();
       }
-      const { url, as, options } = props;
-      const key = (props as unknown as { key: string }).key;
-
-      let viewTransitionScroll = undefined;
-      try {
-        const v = sessionStorage.getItem('__view_transition_scroll_' + key)
-        viewTransitionScroll = JSON.parse(v!)
-      } catch {}
-
+      let isViewTransitionAvailable = undefined;
       let forcedScroll = { x: 0, y: 0 };
 
-      try {
-        const v = sessionStorage.getItem('__next_scroll_' + key);
-        forcedScroll = JSON.parse(v!);
-      } catch {
-        forcedScroll = { x: 0, y: 0 };
-      }
-      let isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
-      if (typeof isViewTransitionAvailable === 'undefined') {
-        const link = Array.from(document.querySelectorAll<HTMLAnchorElement>(`[href='${as}']`)).find(l => isElementVisible(l));
-        isViewTransitionAvailable = Boolean(link);
-      }
+      const { url, as, options } = props;
+      flushSync(() => {
+        const key = (props as unknown as { key: string }).key;
+
+        let viewTransitionScroll = undefined;
+        try {
+          const v = sessionStorage.getItem('__view_transition_scroll_' + key)
+          viewTransitionScroll = JSON.parse(v!)
+        } catch {}
+
+
+        try {
+          const v = sessionStorage.getItem('__next_scroll_' + key);
+          forcedScroll = JSON.parse(v!);
+        } catch {
+          forcedScroll = { x: 0, y: 0 };
+        }
+        isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
+        if (typeof isViewTransitionAvailable === 'undefined') {
+          const link = Array.from(document.querySelectorAll<HTMLAnchorElement>(`[href='${as}']`)).find(l => isElementVisible(l));
+          isViewTransitionAvailable = Boolean(link);
+        }
+      });
       const [, newHash] = as.split('#', 2);
       const isOnlyAHashChange = onlyAHashChange(router.asPath, as);
       if (isOnlyAHashChange) {
