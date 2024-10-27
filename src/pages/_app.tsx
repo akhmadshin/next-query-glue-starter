@@ -166,11 +166,9 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
           forcedScroll = { x: 0, y: 0 };
         }
         isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
-        console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
-        if (typeof isViewTransitionAvailable === 'undefined') {
+        if (typeof isViewTransitionAvailable === 'undefined' && window.screen.height >= forcedScroll.y) {
           const link = Array.from(document.querySelectorAll<HTMLAnchorElement>(`[href='${as}']`)).find(l => isElementVisible(l));
           isViewTransitionAvailable = Boolean(link);
-          console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
         }
       })
       const [, newHash] = as.split('#', 2);
