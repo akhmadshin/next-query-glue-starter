@@ -96,15 +96,32 @@ const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
   return oldHash !== newHash
 }
 
-function isElementVisible (el: HTMLElement) {
-  const rect = el.getBoundingClientRect();
-  return (
-    Math.abs(rect.top) <= rect.height &&
-    Math.abs(rect.left) <= rect.width &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
-  );
+const isElementVisible = (elm: HTMLElement) => {
+  const getViewportY = () => {
+    const top = window.pageYOffset || document.documentElement.scrollTop;
+    const bottom = top + document.documentElement.clientHeight;
+    return { top, bottom }
+  }
+
+  const getElmCoordinates = (elm: HTMLElement) => {
+    const { top, bottom } = elm.getBoundingClientRect();
+    return { top, bottom }
+  }
+
+  const viewport = getViewportY();
+  const elmPosition = getElmCoordinates(elm);
+
+  const top = elmPosition.top + viewport.top;
+  const bottom = elmPosition.bottom + viewport.top;
+  const onScreenFlags = [
+    (top >= viewport.top && top <= viewport.bottom),
+    (bottom >= viewport.top && bottom <= viewport.bottom)
+  ];
+  const atLeastPartlyOnScreen = onScreenFlags.includes(true);
+
+  return atLeastPartlyOnScreen;
 }
+
 export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
 
@@ -149,11 +166,13 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
           forcedScroll = { x: 0, y: 0 };
         }
         isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
+        console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
         if (typeof isViewTransitionAvailable === 'undefined') {
           const link = Array.from(document.querySelectorAll<HTMLAnchorElement>(`[href='${as}']`)).find(l => isElementVisible(l));
           isViewTransitionAvailable = Boolean(link);
+          console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
         }
-      });
+      })
       const [, newHash] = as.split('#', 2);
       const isOnlyAHashChange = onlyAHashChange(router.asPath, as);
       if (isOnlyAHashChange) {
