@@ -30,6 +30,23 @@ const startPageTransition = () => {
   });
 }
 
+export function getSelector(elm: Element) {
+  if (elm.tagName === "BODY") return "BODY";
+  const names = [];
+  while (elm.parentElement && elm.tagName !== "BODY") {
+    if (elm.id) {
+      names.unshift("#" + elm.getAttribute("id")); // getAttribute, because `elm.id` could also return a child element with name "id"
+      break; // Because ID should be unique, no more is needed. Remove the break, if you always want a full path.
+    } else {
+      let c = 1, e = elm;
+      for (; e.previousElementSibling; e = e.previousElementSibling, c++) ;
+      names.unshift(elm.tagName + ":nth-child(" + c + ")");
+    }
+    elm = elm.parentElement;
+  }
+  return names.join(">");
+}
+
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -42,11 +59,13 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
   const router = useRouter();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-
     if (onClick) {
       onClick(e);
     }
+    if (e?.metaKey) {
+      return;
+    }
+    e.preventDefault();
 
     prepareDirectNavigation({
       singletonRouter,
@@ -56,32 +75,38 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     if (!document.startViewTransition) {
       document.dispatchEvent(fadeTransitionStartedEvent);
       setTimeout(() => {
-        try {
-          // Snapshot scroll position right before navigating to a new page:
-          // sessionStorage.setItem(
-          //   '__next_vi_' + singletonRouter._key,
-          //   JSON.stringify({ x: self.pageXOffset, y: self.pageYOffset })
-          // )
-        } catch {}
         return router.push(href);
       }, FADE_OUT_DURATION - 25)
       return;
     }
 
-    handleTransitionStarted(href as string);
+    const transitionableImg = e.currentTarget.querySelector('.transitionable-img');
+    const linkSelector = transitionableImg ? getSelector(transitionableImg) : undefined;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const routerKey = singletonRouter.router!._key;
+
+    sessionStorage.setItem(
+      `__view_transition_scroll_${routerKey}`,
+      JSON.stringify({ x: pageXOffset, y: pageYOffset })
+    );
+    if (linkSelector) {
+      sessionStorage.setItem(
+        `__view_transition_selector_${routerKey}`,
+        linkSelector
+      );
+      window.imageSelectorByPathName = {
+        ...window.imageSelectorByPathName,
+        [router.pathname]: linkSelector
+      }
+    }
+
+    handleTransitionStarted(href as string, router.asPath, routerKey);
 
     startPageTransition();
 
     setTimeout(() => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        const viewTransitionScrollKey = '__view_transition_scroll_' + singletonRouter.router!._key
-        sessionStorage.setItem(
-          viewTransitionScrollKey,
-          JSON.stringify({ x: pageXOffset, y: pageYOffset })
-        )
-      } catch {}
       return router.push(href);
     }, 16);
   }

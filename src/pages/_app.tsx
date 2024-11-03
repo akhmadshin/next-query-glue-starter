@@ -15,7 +15,7 @@ import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { Providers } from '@/components/Providers';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
-import { flushSync } from 'react-dom';
+import { getSelector } from '@/components/Link';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -26,16 +26,18 @@ import { flushSync } from 'react-dom';
   routeLoader.loadRoute('/blog/[slug]').catch((e: string) => { throw new Error(e) });
 })();
 
-export const handleTransitionStarted = (href: string) => {
-  const clickedLink = document.querySelector<HTMLImageElement>(`a[href$='${href}']`);
-  const clickedImg = clickedLink?.querySelector<HTMLImageElement>('.transitionable-img');
-  if (clickedImg) {
-    window.transitionImg = clickedImg.src.replace(location.origin || '', '');
-    clickedImg.style.viewTransitionName = 'transition-img';
-    return;
+export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
+  const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
+
+  window.transitionHref = currentHref;
+  if (imgSelector) {
+    const clickedImg = document.querySelector<HTMLImageElement>(imgSelector);
+    if (clickedImg && clickedImg.src) {
+      window.transitionImg = clickedImg.src.replace(location.origin || '', '');
+      clickedImg.style.viewTransitionName = 'transition-img';
+      return;
+    }
   }
-
-
   const image = document.querySelector<HTMLImageElement>('.transition-img');
   if (image && image.src) {
     image.style.viewTransitionName = 'transition-img';
@@ -44,25 +46,6 @@ export const handleTransitionStarted = (href: string) => {
   }
 }
 
-const handleRouteChangeComplete = () => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  if (!window.pageMounted) {
-    return;
-  }
-  const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
-
-  if (transitionImg) {
-    transitionImg.style.viewTransitionName = 'transition-img';
-  }
-  window.transitionImg = undefined;
-
-  if (window.pageMounted) {
-    window.pageMounted();
-    window.pageMounted = undefined;
-  }
-}
 
 const handleHashChangeStart = () => {
   if (window.transition) {
@@ -125,6 +108,33 @@ const isElementVisible = (elm: HTMLElement) => {
 export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
 
+  const handleRouteChangeComplete = () => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (!window.pageMounted) {
+      return;
+    }
+
+    const imgSelector = window.imageSelectorByPathName ? window.imageSelectorByPathName[router.pathname] : undefined;
+    const img = imgSelector ? document.querySelector<HTMLImageElement>(imgSelector) : undefined;
+    if (img) {
+      img.style.viewTransitionName = 'transition-img';
+    } else {
+      const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
+      if (transitionImg) {
+        transitionImg.style.viewTransitionName = 'transition-img';
+      }
+    }
+
+    window.transitionImg = undefined;
+    if (window.pageMounted) {
+      window.pageMounted();
+      window.pageMounted = undefined;
+    }
+  }
+
+
   useEffect(() => {
     if (!router) {
       return;
@@ -145,36 +155,53 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       if (window.transition) {
         window.transition.skipTransition();
       }
+
+      const key = (props as unknown as { key: string }).key;
+      const { url, as, options } = props;
+      let transitionImgSelector =  sessionStorage.getItem(`__view_transition_selector_${key}`);
+
+      if (!transitionImgSelector) {
+        const matchedLinks = Array.from(document.querySelectorAll<HTMLImageElement>(`a[href$='${as}']`));
+        const clickedImg = matchedLinks.reduce((acc: HTMLImageElement | undefined, link) => {
+          if (!acc) {
+            const image = link.querySelector<HTMLImageElement>('.transitionable-img');
+            acc = image ?? undefined;
+          }
+          return acc;
+        }, undefined);
+        if (clickedImg) {
+          transitionImgSelector = getSelector(clickedImg);
+          sessionStorage.setItem(`__view_transition_selector_${key}`, transitionImgSelector);
+        }
+      }
+
+      let img = transitionImgSelector ? document.querySelector<HTMLImageElement>(transitionImgSelector) : undefined;
+      if (!img) {
+        img = document.querySelector<HTMLImageElement>('.transition-img');
+      }
+
       let isViewTransitionAvailable = undefined;
-      let isTransitionImageVisible = false;
+      const isTransitionImageVisible = img ? isElementVisible(img) : false;
       let forcedScroll = { x: 0, y: 0 };
 
-      const { url, as, options } = props;
-      flushSync(() => {
-        const key = (props as unknown as { key: string }).key;
 
-        const transitionableImg = Array.from(document.querySelectorAll<HTMLAnchorElement>(`.transitionable-img`)).find(l => isElementVisible(l));
-        isTransitionImageVisible = Boolean(transitionableImg);
+      let viewTransitionScroll = undefined;
+      try {
+        const v = sessionStorage.getItem('__view_transition_scroll_' + key)
+        viewTransitionScroll = JSON.parse(v!)
+      } catch {}
 
-        let viewTransitionScroll = undefined;
-        try {
-          const v = sessionStorage.getItem('__view_transition_scroll_' + key)
-          viewTransitionScroll = JSON.parse(v!)
-        } catch {}
+      try {
+        const v = sessionStorage.getItem('__next_scroll_' + key);
+        forcedScroll = JSON.parse(v!);
+      } catch {
+        forcedScroll = { x: 0, y: 0 };
+      }
+      isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
+      if (typeof isViewTransitionAvailable === 'undefined') {
+        isViewTransitionAvailable = window.screen.height >= forcedScroll.y;
+      }
 
-
-        try {
-          const v = sessionStorage.getItem('__next_scroll_' + key);
-          forcedScroll = JSON.parse(v!);
-        } catch {
-          forcedScroll = { x: 0, y: 0 };
-        }
-        isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
-        if (typeof isViewTransitionAvailable === 'undefined' && window.screen.height >= forcedScroll.y) {
-          const link = Array.from(document.querySelectorAll<HTMLAnchorElement>(`[href='${as}']`)).find(l => isElementVisible(l));
-          isViewTransitionAvailable = Boolean(link);
-        }
-      })
       const [, newHash] = as.split('#', 2);
       const isOnlyAHashChange = onlyAHashChange(router.asPath, as);
       if (isOnlyAHashChange) {
@@ -224,7 +251,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
             }
           },
         });
-        handleTransitionStarted(as);
+        handleTransitionStarted(as, router.asPath, key);
         setTimeout(async () => {
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
           // Waiting 1 tick for document to update
