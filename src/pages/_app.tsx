@@ -26,13 +26,14 @@ import { getSelector } from '@/components/Link';
   routeLoader.loadRoute('/blog/[slug]').catch((e: string) => { throw new Error(e) });
 })();
 
-export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
-  const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
+const isTransitionAvailable = () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const routerKey = singletonRouter.router!._key;
 
   let isViewTransitionAvailable = undefined;
   let forcedScroll = { x: 0, y: 0 };
-
-  let viewTransitionScroll = undefined;
+  let viewTransitionScroll = { x: 0, y: 0 };
   try {
     const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
     viewTransitionScroll = JSON.parse(v!)
@@ -48,6 +49,12 @@ export const handleTransitionStarted = (href: string, currentHref: string, route
   viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
   isViewTransitionAvailable  = window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
 
+  return isViewTransitionAvailable;
+}
+export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
+  const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
+
+  const isViewTransitionAvailable = isTransitionAvailable();
 
   window.transitionHref = currentHref;
   if (imgSelector) {
@@ -110,14 +117,16 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       return;
     }
 
+    const isViewTransitionAvailable = isTransitionAvailable();
+
     const imgSelector = window.imageSelectorByPathName ? window.imageSelectorByPathName[router.pathname] : undefined;
     const img = imgSelector ? document.querySelector<HTMLImageElement>(imgSelector) : undefined;
     if (img) {
-      img.style.viewTransitionName = 'transition-img';
+      img.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
     } else {
       const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
       if (transitionImg) {
-        transitionImg.style.viewTransitionName = 'transition-img';
+        transitionImg.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
       }
     }
 
