@@ -29,18 +29,38 @@ import { getSelector } from '@/components/Link';
 export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
   const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
 
+  let isViewTransitionAvailable = undefined;
+  let forcedScroll = { x: 0, y: 0 };
+
+  let viewTransitionScroll = undefined;
+  try {
+    const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
+    viewTransitionScroll = JSON.parse(v!)
+  } catch {}
+
+  try {
+    const v = sessionStorage.getItem('__next_scroll_' + routerKey);
+    forcedScroll = JSON.parse(v!);
+  } catch {
+    forcedScroll = { x: 0, y: 0 };
+  }
+  forcedScroll = forcedScroll || { x: 0, y: 0 };
+  viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
+  isViewTransitionAvailable  = window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+
+
   window.transitionHref = currentHref;
   if (imgSelector) {
     const clickedImg = document.querySelector<HTMLImageElement>(imgSelector);
     if (clickedImg && clickedImg.src) {
       window.transitionImg = clickedImg.src.replace(location.origin || '', '');
-      clickedImg.style.viewTransitionName = 'transition-img';
+      clickedImg.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
       return;
     }
   }
   const image = document.querySelector<HTMLImageElement>('.transition-img');
   if (image && image.src) {
-    image.style.viewTransitionName = 'transition-img';
+    image.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
     window.transitionImg = image.src.replace(location.origin || '', '');
     return;
   }
@@ -77,32 +97,6 @@ const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
   // leave hash === '' cases. The identity case falls through
   // and is treated as a next reload.
   return oldHash !== newHash
-}
-
-const isElementVisible = (elm: HTMLElement) => {
-  const getViewportY = () => {
-    const top = window.pageYOffset || document.documentElement.scrollTop;
-    const bottom = top + document.documentElement.clientHeight;
-    return { top, bottom }
-  }
-
-  const getElmCoordinates = (elm: HTMLElement) => {
-    const { top, bottom } = elm.getBoundingClientRect();
-    return { top, bottom }
-  }
-
-  const viewport = getViewportY();
-  const elmPosition = getElmCoordinates(elm);
-
-  const top = elmPosition.top + viewport.top;
-  const bottom = elmPosition.bottom + viewport.top;
-  const onScreenFlags = [
-    (top >= viewport.top && top <= viewport.bottom),
-    (bottom >= viewport.top && bottom <= viewport.bottom)
-  ];
-  const atLeastPartlyOnScreen = onScreenFlags.includes(true);
-
-  return atLeastPartlyOnScreen;
 }
 
 export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
@@ -175,31 +169,12 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         }
       }
 
-      let img = transitionImgSelector ? document.querySelector<HTMLImageElement>(transitionImgSelector) : undefined;
-      if (!img) {
-        img = document.querySelector<HTMLImageElement>('.transition-img');
-      }
-
-      let isViewTransitionAvailable = undefined;
-      const isTransitionImageVisible = img ? isElementVisible(img) : false;
       let forcedScroll = { x: 0, y: 0 };
-
-
-      let viewTransitionScroll = undefined;
-      try {
-        const v = sessionStorage.getItem('__view_transition_scroll_' + key)
-        viewTransitionScroll = JSON.parse(v!)
-      } catch {}
-
       try {
         const v = sessionStorage.getItem('__next_scroll_' + key);
         forcedScroll = JSON.parse(v!);
       } catch {
         forcedScroll = { x: 0, y: 0 };
-      }
-      isViewTransitionAvailable  = viewTransitionScroll ? window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y) : undefined;
-      if (typeof isViewTransitionAvailable === 'undefined') {
-        isViewTransitionAvailable = window.screen.height >= forcedScroll.y;
       }
 
       const [, newHash] = as.split('#', 2);
@@ -224,7 +199,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         singletonRouter,
       });
 
-      if (!isTransitionImageVisible || !isViewTransitionAvailable || !document.startViewTransition) {
+      if (!document.startViewTransition) {
         document.dispatchEvent(fadeTransitionStartedEvent);
 
         setTimeout(async () => {
