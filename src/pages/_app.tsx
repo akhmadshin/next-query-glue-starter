@@ -16,7 +16,6 @@ import { Providers } from '@/components/Providers';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
 import { getSelector } from '@/components/Link';
-import { flushSync } from 'react-dom';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -46,7 +45,12 @@ const isTransitionAvailable = () => {
   } catch {
     forcedScroll = { x: 0, y: 0 };
   }
-  isViewTransitionAvailable  = forcedScroll === null || viewTransitionScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+  console.log('forcedScroll = ', forcedScroll);
+  console.log('viewTransitionScroll = ', viewTransitionScroll);
+
+  viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
+  isViewTransitionAvailable  = forcedScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+  console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
 
   return isViewTransitionAvailable;
 }
