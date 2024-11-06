@@ -28,37 +28,32 @@ import { flushSync } from 'react-dom';
 })();
 
 const isTransitionAvailable = () => {
-  // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // // @ts-expect-error
-  // const routerKey = singletonRouter.router!._key;
-  //
-  // let isViewTransitionAvailable = undefined;
-  // let forcedScroll = null;
-  // let viewTransitionScroll = null;
-  // try {
-  //   const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
-  //   viewTransitionScroll = JSON.parse(v!)
-  // } catch {}
-  //
-  // try {
-  //   const v = sessionStorage.getItem('__next_scroll_' + routerKey);
-  //   forcedScroll = JSON.parse(v!);
-  // } catch {
-  //   forcedScroll = { x: 0, y: 0 };
-  // }
-  // console.log('viewTransitionScroll = ', viewTransitionScroll);
-  // console.log('forcedScroll         = ', forcedScroll);
-  // isViewTransitionAvailable  = forcedScroll === null || viewTransitionScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
-  //
-  // console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
-  // return isViewTransitionAvailable;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const routerKey = singletonRouter.router!._key;
 
-  return true;
+  let isViewTransitionAvailable = undefined;
+  let forcedScroll = null;
+  let viewTransitionScroll = null;
+  try {
+    const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
+    viewTransitionScroll = JSON.parse(v!)
+  } catch {}
+
+  try {
+    const v = sessionStorage.getItem('__next_scroll_' + routerKey);
+    forcedScroll = JSON.parse(v!);
+  } catch {
+    forcedScroll = { x: 0, y: 0 };
+  }
+  isViewTransitionAvailable  = forcedScroll === null || viewTransitionScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+
+  return isViewTransitionAvailable;
 }
-export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
+export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string, isDirect: boolean) => {
   const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
 
-  const isViewTransitionAvailable = isTransitionAvailable();
+  const isViewTransitionAvailable = isDirect ? true : isTransitionAvailable();
 
   window.transitionHref = currentHref;
   if (imgSelector) {
@@ -239,7 +234,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
             }
           },
         });
-        handleTransitionStarted(as, router.asPath, key);
+        handleTransitionStarted(as, router.asPath, key, false);
         setTimeout(async () => {
           await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
           // Waiting 1 tick for document to update

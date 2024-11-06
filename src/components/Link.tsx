@@ -102,7 +102,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       }
     }
 
-    handleTransitionStarted(href as string, router.asPath, routerKey);
+    handleTransitionStarted(href as string, router.asPath, routerKey, true);
 
     startPageTransition();
 
