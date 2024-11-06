@@ -16,6 +16,7 @@ import { Providers } from '@/components/Providers';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
 import { getSelector } from '@/components/Link';
+import { flushSync } from 'react-dom';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -27,29 +28,32 @@ import { getSelector } from '@/components/Link';
 })();
 
 const isTransitionAvailable = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const routerKey = singletonRouter.router!._key;
+  return flushSync(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const routerKey = singletonRouter.router!._key;
 
-  let isViewTransitionAvailable = undefined;
-  let forcedScroll = null;
-  let viewTransitionScroll = null;
-  try {
-    const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
-    viewTransitionScroll = JSON.parse(v!)
-  } catch {}
+    let isViewTransitionAvailable = undefined;
+    let forcedScroll = null;
+    let viewTransitionScroll = null;
+    try {
+      const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
+      viewTransitionScroll = JSON.parse(v!)
+    } catch {}
 
-  try {
-    const v = sessionStorage.getItem('__next_scroll_' + routerKey);
-    forcedScroll = JSON.parse(v!);
-  } catch {
-    forcedScroll = { x: 0, y: 0 };
-  }
-  forcedScroll = forcedScroll || { x: 0, y: 0 };
-  viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
-  isViewTransitionAvailable  = forcedScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+    try {
+      const v = sessionStorage.getItem('__next_scroll_' + routerKey);
+      forcedScroll = JSON.parse(v!);
+    } catch {
+      forcedScroll = { x: 0, y: 0 };
+    }
+    console.log('viewTransitionScroll = ', viewTransitionScroll);
+    console.log('forcedScroll         = ', forcedScroll);
+    isViewTransitionAvailable  = forcedScroll === null || viewTransitionScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
 
-  return isViewTransitionAvailable;
+    console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
+    return isViewTransitionAvailable;
+  })
 }
 export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
   const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
