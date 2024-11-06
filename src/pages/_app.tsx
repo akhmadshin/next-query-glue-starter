@@ -45,12 +45,9 @@ const isTransitionAvailable = () => {
   } catch {
     forcedScroll = { x: 0, y: 0 };
   }
-  console.log('forcedScroll = ', forcedScroll);
-  console.log('viewTransitionScroll = ', viewTransitionScroll);
 
   viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
   isViewTransitionAvailable  = forcedScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
-  console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
 
   return isViewTransitionAvailable;
 }
