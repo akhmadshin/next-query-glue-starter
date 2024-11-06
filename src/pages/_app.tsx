@@ -28,32 +28,32 @@ import { flushSync } from 'react-dom';
 })();
 
 const isTransitionAvailable = () => {
-  return flushSync(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const routerKey = singletonRouter.router!._key;
+  // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // // @ts-expect-error
+  // const routerKey = singletonRouter.router!._key;
+  //
+  // let isViewTransitionAvailable = undefined;
+  // let forcedScroll = null;
+  // let viewTransitionScroll = null;
+  // try {
+  //   const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
+  //   viewTransitionScroll = JSON.parse(v!)
+  // } catch {}
+  //
+  // try {
+  //   const v = sessionStorage.getItem('__next_scroll_' + routerKey);
+  //   forcedScroll = JSON.parse(v!);
+  // } catch {
+  //   forcedScroll = { x: 0, y: 0 };
+  // }
+  // console.log('viewTransitionScroll = ', viewTransitionScroll);
+  // console.log('forcedScroll         = ', forcedScroll);
+  // isViewTransitionAvailable  = forcedScroll === null || viewTransitionScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+  //
+  // console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
+  // return isViewTransitionAvailable;
 
-    let isViewTransitionAvailable = undefined;
-    let forcedScroll = null;
-    let viewTransitionScroll = null;
-    try {
-      const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
-      viewTransitionScroll = JSON.parse(v!)
-    } catch {}
-
-    try {
-      const v = sessionStorage.getItem('__next_scroll_' + routerKey);
-      forcedScroll = JSON.parse(v!);
-    } catch {
-      forcedScroll = { x: 0, y: 0 };
-    }
-    console.log('viewTransitionScroll = ', viewTransitionScroll);
-    console.log('forcedScroll         = ', forcedScroll);
-    isViewTransitionAvailable  = forcedScroll === null || viewTransitionScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
-
-    console.log('isViewTransitionAvailable = ', isViewTransitionAvailable);
-    return isViewTransitionAvailable;
-  })
+  return true;
 }
 export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string) => {
   const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
