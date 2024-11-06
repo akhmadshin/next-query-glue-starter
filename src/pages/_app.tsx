@@ -32,8 +32,8 @@ const isTransitionAvailable = () => {
   const routerKey = singletonRouter.router!._key;
 
   let isViewTransitionAvailable = undefined;
-  let forcedScroll = { x: 0, y: 0 };
-  let viewTransitionScroll = { x: 0, y: 0 };
+  let forcedScroll = null;
+  let viewTransitionScroll = null;
   try {
     const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
     viewTransitionScroll = JSON.parse(v!)
@@ -47,7 +47,7 @@ const isTransitionAvailable = () => {
   }
   forcedScroll = forcedScroll || { x: 0, y: 0 };
   viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
-  isViewTransitionAvailable  = window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+  isViewTransitionAvailable  = forcedScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
 
   return isViewTransitionAvailable;
 }
