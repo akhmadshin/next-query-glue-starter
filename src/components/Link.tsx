@@ -83,7 +83,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       return;
     }
 
-    const transitionableImg = e.currentTarget.querySelector('.transitionable-img');
+    const transitionableImg = e.currentTarget.querySelector<HTMLImageElement>('.transitionable-img');
     const linkSelector = transitionableImg ? getSelector(transitionableImg) : undefined;
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

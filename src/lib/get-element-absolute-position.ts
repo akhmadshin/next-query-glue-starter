@@ -1,4 +1,4 @@
-export function getElementAbsolutePosition(element) {
+export function getElementAbsolutePosition(element: HTMLElement | null) {
 	if (!element) {
 		return;
 	}
