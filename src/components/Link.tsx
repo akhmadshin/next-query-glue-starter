@@ -7,6 +7,7 @@ import { handleTransitionStarted } from '@/pages/_app';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 import { getElementAbsolutePosition } from '@/lib/get-element-absolute-position';
+import { formatWithValidation } from 'next/dist/shared/lib/router/utils/format-url';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
@@ -48,8 +49,6 @@ export function getSelector(elm: Element) {
   return names.join(">");
 }
 
-
-
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -60,12 +59,13 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
   } = props;
   const localRef = useRef<HTMLAnchorElement | null>();
   const router = useRouter();
+  const urlAsString = typeof href === 'string' ? href : formatWithValidation(href);
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (onClick) {
       onClick(e);
     }
-    if (e?.metaKey) {
+    if (e?.metaKey || urlAsString.startsWith('#')) {
       return;
     }
     e.preventDefault();
@@ -109,7 +109,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       }
     }
 
-    handleTransitionStarted(href as string, router.asPath, routerKey, true);
+    handleTransitionStarted(urlAsString, router.asPath, routerKey, true);
 
     startPageTransition();
 

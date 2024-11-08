@@ -201,6 +201,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         forcedScroll = { x: 0, y: 0 };
       }
 
+      forcedScroll = forcedScroll || { x: 0, y: 0 };
       const [, newHash] = as.split('#', 2);
       const isOnlyAHashChange = onlyAHashChange(router.asPath, as);
       if (isOnlyAHashChange) {

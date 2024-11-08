@@ -46,7 +46,11 @@ export const RichText: React.FC<Props> = ({ content, className = 'prose lg:prose
                 if (headerText) {
 
                   const hash = stringToHash(headerText);
-                  return <h2 id={hash}>{children}</h2>
+                  return (
+                    <Link href={`#${hash}`}>
+                      <h2 id={hash}>{children}</h2>
+                    </Link>
+                  )
                 }
                 return <h2>{children}</h2>
             }
