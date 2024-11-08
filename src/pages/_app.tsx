@@ -16,6 +16,8 @@ import { Providers } from '@/components/Providers';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
 import { getSelector } from '@/components/Link';
+import { isObserved } from '@/lib/rectangleCollide';
+import { getElementAbsolutePosition } from '@/lib/get-element-absolute-position';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -26,12 +28,8 @@ import { getSelector } from '@/components/Link';
   routeLoader.loadRoute('/blog/[slug]').catch((e: string) => { throw new Error(e) });
 })();
 
-const isTransitionAvailable = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const routerKey = singletonRouter.router!._key;
-
-  let isViewTransitionAvailable = undefined;
+const isTransitionAvailable = (routerKey: string) => {
+  let isViewTransitionAvailable = true;
   let forcedScroll = null;
   let viewTransitionScroll = null;
   try {
@@ -46,15 +44,18 @@ const isTransitionAvailable = () => {
     forcedScroll = { x: 0, y: 0 };
   }
 
-  viewTransitionScroll = viewTransitionScroll || { x: 0, y: 0 };
-  isViewTransitionAvailable  = forcedScroll === null ? true : window.screen.height >= Math.abs(viewTransitionScroll.y - forcedScroll.y);
+  if (viewTransitionScroll) {
+    const isImgObserved = isObserved(viewTransitionScroll, forcedScroll?.x || 0, forcedScroll?.y || 0);
+    isViewTransitionAvailable  = forcedScroll === null ? true : isImgObserved;
+  } else {
+    isViewTransitionAvailable = true;
+  }
 
   return isViewTransitionAvailable;
 }
 export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string, isDirect: boolean) => {
   const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
-
-  const isViewTransitionAvailable = isDirect ? true : isTransitionAvailable();
+  const isViewTransitionAvailable = isDirect ? true : isTransitionAvailable(routerKey);
 
   window.transitionHref = currentHref;
   if (imgSelector) {
@@ -117,14 +118,28 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       return;
     }
 
-    const isViewTransitionAvailable = isTransitionAvailable();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const routerKey = singletonRouter.router!._key;
+    const isViewTransitionAvailable = isTransitionAvailable(routerKey);
 
     const imgSelector = window.imageSelectorByPathName ? window.imageSelectorByPathName[router.pathname] : undefined;
     const img = imgSelector ? document.querySelector<HTMLImageElement>(imgSelector) : undefined;
     if (img) {
+      const rect = getElementAbsolutePosition(img);
+      sessionStorage.setItem(
+        `__view_transition_scroll_${routerKey}`,
+        JSON.stringify(rect)
+      );
       img.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
     } else {
       const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
+      const rect = getElementAbsolutePosition(transitionImg);
+      sessionStorage.setItem(
+        `__view_transition_scroll_${routerKey}`,
+        JSON.stringify(rect)
+      );
+
       if (transitionImg) {
         transitionImg.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
       }
@@ -246,7 +261,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
       })
       return false;
     });
-  }, [router])
+  }, [router]);
 
   return (
     <Providers dehydratedState={pageProps.dehydratedState}>

@@ -6,6 +6,7 @@ import { transitionHelper } from '@/lib/transitionHelper';
 import { handleTransitionStarted } from '@/pages/_app';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
+import { getElementAbsolutePosition } from '@/lib/get-element-absolute-position';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
@@ -47,6 +48,8 @@ export function getSelector(elm: Element) {
   return names.join(">");
 }
 
+
+
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -87,10 +90,14 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     // @ts-expect-error
     const routerKey = singletonRouter.router!._key;
 
-    sessionStorage.setItem(
-      `__view_transition_scroll_${routerKey}`,
-      JSON.stringify({ x: pageXOffset, y: pageYOffset })
-    );
+    if (transitionableImg) {
+      const rect = getElementAbsolutePosition(transitionableImg);
+      sessionStorage.setItem(
+        `__view_transition_scroll_${routerKey}`,
+        JSON.stringify(rect)
+      );
+    }
+
     if (linkSelector) {
       sessionStorage.setItem(
         `__view_transition_selector_${routerKey}`,
