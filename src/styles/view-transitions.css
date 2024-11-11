@@ -1,6 +1,9 @@
 .main-header {
   view-transition-name: main-header;
 }
+.no-view-transition {
+  view-transition-name: no-view-transition;
+}
 
 @keyframes fade-in {
   from { opacity: 0; }
