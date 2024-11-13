@@ -4,7 +4,7 @@ declare global {
     placeholderData?: object;
     transition?: ViewTransition;
     transitionImg?: string;
-    imageSelectorByPathName?: Record<string, string>;
+    transitionImgSelector?: string;
   }
 }
 

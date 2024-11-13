@@ -122,10 +122,11 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
     const routerKey = singletonRouter.router!._key;
     const isViewTransitionAvailable = isTransitionAvailable(routerKey);
 
-    const imageSelectorByPathName = window.imageSelectorByPathName ? window.imageSelectorByPathName[router.pathname] : undefined;
+    const imageSelectorByPathName = window.transitionImgSelector;
     let imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`) ?? undefined;
     imgSelector = imgSelector ?? imageSelectorByPathName;
     const img = imgSelector ? document.querySelector<HTMLImageElement>(imgSelector) : undefined;
+    window.transitionImgSelector = undefined;
     if (img) {
       const imgPosition = getElementAbsolutePosition(img);
       sessionStorage.setItem(

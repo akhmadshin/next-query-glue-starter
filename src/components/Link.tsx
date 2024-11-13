@@ -103,10 +103,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
         `__view_transition_selector_${routerKey}`,
         linkSelector
       );
-      window.imageSelectorByPathName = {
-        ...window.imageSelectorByPathName,
-        [router.pathname]: linkSelector
-      }
+      window.transitionImgSelector = linkSelector;
     }
 
     handleTransitionStarted(urlAsString, router.asPath, routerKey, true);
