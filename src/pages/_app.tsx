@@ -33,7 +33,7 @@ const isTransitionAvailable = (routerKey: string) => {
   let forcedScroll = null;
   let viewTransitionScroll = null;
   try {
-    const v = sessionStorage.getItem('__view_transition_scroll_' + routerKey)
+    const v = sessionStorage.getItem('__view_transition_image_position_' + routerKey)
     viewTransitionScroll = JSON.parse(v!)
   } catch {}
 
@@ -57,7 +57,6 @@ export const handleTransitionStarted = (href: string, currentHref: string, route
   const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
   const isViewTransitionAvailable = isDirect ? true : isTransitionAvailable(routerKey);
 
-  window.transitionHref = currentHref;
   if (imgSelector) {
     const clickedImg = document.querySelector<HTMLImageElement>(imgSelector);
     if (clickedImg && clickedImg.src) {
@@ -123,20 +122,22 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
     const routerKey = singletonRouter.router!._key;
     const isViewTransitionAvailable = isTransitionAvailable(routerKey);
 
-    const imgSelector = window.imageSelectorByPathName ? window.imageSelectorByPathName[router.pathname] : undefined;
+    const imageSelectorByPathName = window.imageSelectorByPathName ? window.imageSelectorByPathName[router.pathname] : undefined;
+    let imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`) ?? undefined;
+    imgSelector = imgSelector ?? imageSelectorByPathName;
     const img = imgSelector ? document.querySelector<HTMLImageElement>(imgSelector) : undefined;
     if (img) {
-      const rect = getElementAbsolutePosition(img);
+      const imgPosition = getElementAbsolutePosition(img);
       sessionStorage.setItem(
-        `__view_transition_scroll_${routerKey}`,
-        JSON.stringify(rect)
+        `__view_transition_image_position_${routerKey}`,
+        JSON.stringify(imgPosition)
       );
       img.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
     } else {
       const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
       const rect = getElementAbsolutePosition(transitionImg);
       sessionStorage.setItem(
-        `__view_transition_scroll_${routerKey}`,
+        `__view_transition_image_position_${routerKey}`,
         JSON.stringify(rect)
       );
 

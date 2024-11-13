@@ -93,7 +93,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     if (transitionableImg) {
       const rect = getElementAbsolutePosition(transitionableImg);
       sessionStorage.setItem(
-        `__view_transition_scroll_${routerKey}`,
+        `__view_transition_image_position_${routerKey}`,
         JSON.stringify(rect)
       );
     }
