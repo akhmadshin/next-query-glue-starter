@@ -1,13 +1,9 @@
-import { BlogItemPage } from '@/routes/BlogItemPage';
 import { withSSRTanStackQuery } from '@/lib/withSSRTanStackQuery';
 import { ArticleItemApi } from '@/types/api';
 import { getMockArticle } from '@/routes/BlogItemPage/getMockArticle';
+import { InferGetServerSidePropsType, NextPage } from 'next';
+import { BlogItemPage } from '@/routes/BlogItemPage';
 
-export default function Page() {
-  return (
-    <BlogItemPage />
-  )
-}
 const r = /\d+/;
 
 export const getServerSideProps = withSSRTanStackQuery<ArticleItemApi, { slug: string }>(async ({ params }) => {
@@ -19,3 +15,9 @@ export const getServerSideProps = withSSRTanStackQuery<ArticleItemApi, { slug: s
     props: getMockArticle(slugInt) as ArticleItemApi,
   }
 })
+
+const Page: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = () => {
+  return <BlogItemPage />;
+};
+
+export default Page;
