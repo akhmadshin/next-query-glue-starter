@@ -14,8 +14,10 @@ const ArticleListContent: Component<Props> = ({ articles, isLoading }) => {
   if (!articles && isLoading) {
     return (
       <>
-        <SkeletonArticleCard/>
-        <SkeletonArticleCard/>
+        {Array.from(Array(20).keys())
+          .map((id) => (
+            <SkeletonArticleCard key={id} />
+          ))}
       </>
     )
   }

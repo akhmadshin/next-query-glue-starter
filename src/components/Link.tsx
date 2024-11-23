@@ -2,34 +2,17 @@ import NextLink, { LinkProps } from 'next/link';
 import React, { AnchorHTMLAttributes, MouseEvent, PropsWithChildren, useRef } from 'react';
 import { prepareDirectNavigation } from 'next-query-glue';
 import singletonRouter, { useRouter } from 'next/router';
-import { transitionHelper } from '@/lib/transitionHelper';
-import { handleTransitionStarted } from '@/pages/_app';
 import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
-import { getElementAbsolutePosition } from '@/lib/get-element-absolute-position';
 import { formatWithValidation } from 'next/dist/shared/lib/router/utils/format-url';
+import { startViewTransition } from 'next-rich-view-transitions';
 
 type NextLinkProps = PropsWithChildren<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps>
 
 type Props = NextLinkProps & {
   placeholderData?: object;
-}
-
-const startPageTransition = () => {
-  if (window.transition) {
-    window.transition.skipTransition();
-  }
-
-  const pageMountedPromise: Promise<void> = new Promise(resolve => {
-    window.pageMounted = resolve;
-  })
-
-  transitionHelper({
-    update: async () => {
-      await pageMountedPromise;
-    },
-  });
+  disabled?: boolean;
 }
 
 export function getSelector(elm: Element) {
@@ -54,6 +37,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     placeholderData,
     onClick,
     href,
+    disabled,
     children,
     ...restProps
   } = props;
@@ -64,6 +48,10 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (onClick) {
       onClick(e);
+    }
+    if (disabled) {
+      e.preventDefault();
+      return;
     }
     if (e?.metaKey || urlAsString.startsWith('#')) {
       return;
@@ -82,37 +70,12 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       }, FADE_OUT_DURATION - 25)
       return;
     }
+    const transitionImg = e.currentTarget.querySelector<HTMLImageElement>('.transitionable-img') || document.querySelector('.transition-img');
+    startViewTransition(transitionImg).then(() => {
+      router.push(href);
+    });
 
-    const transitionableImg = e.currentTarget.querySelector<HTMLImageElement>('.transitionable-img');
-    const linkSelector = transitionableImg ? getSelector(transitionableImg) : undefined;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const routerKey = singletonRouter.router!._key;
-
-    if (transitionableImg) {
-      const rect = getElementAbsolutePosition(transitionableImg);
-      sessionStorage.setItem(
-        `__view_transition_image_position_${routerKey}`,
-        JSON.stringify(rect)
-      );
-    }
-
-    if (linkSelector) {
-      sessionStorage.setItem(
-        `__view_transition_selector_${routerKey}`,
-        linkSelector
-      );
-      window.transitionImgSelector = linkSelector;
-    }
-
-    handleTransitionStarted(urlAsString, router.asPath, routerKey, true);
-
-    startPageTransition();
-
-    setTimeout(() => {
-      return router.push(href);
-    }, 16);
   }
 
   return (

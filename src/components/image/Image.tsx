@@ -17,26 +17,26 @@ export const Image = forwardRef<HTMLImageElement, Props>(({
   title,
   fill,
   className = '',
+  src,
   ...props
 }, ref) => {
   const [blurDataURL, setBlurDataURL] = useState<string | undefined>();
-
   const imgRef = useRef<HTMLImageElement>();
 
   useEffect(() => {
     if (typeof window === 'undefined' || !imgRef.current) {
       return;
     }
-    if (!blurDataURL) {
-      requestIdleCallback(() => {
-        setBlurDataURL(createPngDataUri(thumbhash));
-      });
-    }
-  }, [])
+    requestIdleCallback(() => {
+      setBlurDataURL(createPngDataUri(thumbhash));
+    });
+  }, [imgRef, src])
 
   return (
     <NextImage
       fill={fill}
+      src={src}
+      key={String(src)}
       className={`bg-no-repeat object-cover rounded-2xl ${className}`}
       draggable={'false'}
       alt={alt ?? ''}

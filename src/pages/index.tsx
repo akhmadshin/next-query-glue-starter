@@ -1,9 +1,10 @@
 import { HomePage } from '@/routes/HomePage';
 import { withSSRTanStackQuery } from '@/lib/withSSRTanStackQuery';
-import { getMockArticleList } from '@/routes/BlogItemPage/getMockArticleList';
 import { InferGetServerSidePropsType, NextPage } from 'next';
+import articlesList from '../../public/mock.json';
 
-const articles = Array.from(Array(20).keys()).map((id) => getMockArticleList(id));
+
+export const articles = Array.from(Array(20).keys()).map((id) => articlesList[id]);
 
 export const getServerSideProps = withSSRTanStackQuery(async () => {
   return {

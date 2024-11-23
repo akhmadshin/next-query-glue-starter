@@ -6,7 +6,8 @@ import { requestIdleCallback } from '@/lib/request-idle-callback';
 import { BlogItemPostPageLoader } from '@/routes/BlogItemPage/BlogItemPostPageLoader';
 import { RichText } from '@/components/RichText';
 import { cn } from '@/lib/utils';
-import { ArticleAnchors } from '@/components/ArticleAnchors/ArticleAnchors';
+import { BlogItemCarousel } from '@/routes/BlogItemPage/BlogItemCarousel';
+import { Container } from '@/components/Container';
 
 export const BlogItemPostPage = () => {
   const { data: article, isLoading, isFetching} = usePageData<BlogItemPageProps>();
@@ -25,7 +26,7 @@ export const BlogItemPostPage = () => {
 
 const BlogItemContent = ({ article }: { article: ArticleItemApi }) => {
   const articleAttributes = article.attributes || {};
-  const { content, headings } = articleAttributes;
+  const { content } = articleAttributes;
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,9 +48,10 @@ const BlogItemContent = ({ article }: { article: ArticleItemApi }) => {
         'transition-opacity ease-in duration-300 opacity-0',
       )}
     >
-      <ArticleAnchors headings={headings} />
-
-      <RichText content={content}/>
+      <BlogItemCarousel />
+      <Container>
+        <RichText content={content}/>
+      </Container>
     </div>
   )
 }

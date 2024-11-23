@@ -7,8 +7,8 @@ export const SkeletonArticleCard: Component = () => {
     <article className="flex flex-col items-start justify-between">
       <SkeletonImage />
       <div className=" w-full">
-        <div className="mt-3 text-lg font-semibold tracking-tight leading-6">
-          <SkeletonText as="h3" width="45%"/>
+        <div >
+          <SkeletonText className="mt-4 text-2xl font-bold line-clamp-3 4xl:text-regular-18" as="h3" width="45%"/>
         </div>
 
         <div className="relative z-10 mt-5 line-clamp-3 text-sm leading-6 flex flex-col">

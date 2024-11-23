@@ -4,20 +4,17 @@ import '@/styles/view-transitions.css'
 import type { DehydratedState } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
-import { prepareDirectNavigation } from 'next-query-glue';
 import singletonRouter from 'next/router';
+import { useRouter } from 'next/router';
 import { Layout } from '@/components/Layout';
 import { createRouteLoader } from 'next/dist/client/route-loader';
-import { transitionHelper } from '@/lib/transitionHelper';
 import { WithFadeTransition } from '@/hocs/WithFadeTransition';
-import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { Providers } from '@/components/Providers';
-import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
+import { bpsViewTransitions, useTransitionRouterEvents } from 'next-rich-view-transitions';
+import { prepareDirectNavigation } from 'next-query-glue';
+import { fadeTransitionStartedEvent } from '@/lib/fadeTransitionStartedEvent';
 import { scrollToWithYCheck } from '@/lib/scrollToWithYCheck';
-import { getSelector } from '@/components/Link';
-import { isObserved } from '@/lib/rectangleCollide';
-import { getElementAbsolutePosition } from '@/lib/get-element-absolute-position';
+import { FADE_OUT_DURATION } from '@/constants/FADE_TRANSITION';
 
 (() => {
   if (typeof window === 'undefined') {
@@ -25,60 +22,10 @@ import { getElementAbsolutePosition } from '@/lib/get-element-absolute-position'
   }
   const routeLoader = createRouteLoader('');
   routeLoader.loadRoute('/').catch((e: string) => { throw new Error(e) });
+  routeLoader.loadRoute('/demo').catch((e: string) => { throw new Error(e) });
+  routeLoader.loadRoute('/demo/[slug]').catch((e: string) => { throw new Error(e) });
   routeLoader.loadRoute('/blog/[slug]').catch((e: string) => { throw new Error(e) });
 })();
-
-const isTransitionAvailable = (routerKey: string) => {
-  let isViewTransitionAvailable = true;
-  let forcedScroll = null;
-  let viewTransitionScroll = null;
-  try {
-    const v = sessionStorage.getItem('__view_transition_image_position_' + routerKey)
-    viewTransitionScroll = JSON.parse(v!)
-  } catch {}
-
-  try {
-    const v = sessionStorage.getItem('__next_scroll_' + routerKey);
-    forcedScroll = JSON.parse(v!);
-  } catch {
-    forcedScroll = { x: 0, y: 0 };
-  }
-
-  if (viewTransitionScroll) {
-    const isImgObserved = isObserved(viewTransitionScroll, forcedScroll?.x || 0, forcedScroll?.y || 0);
-    isViewTransitionAvailable  = forcedScroll === null ? true : isImgObserved;
-  } else {
-    isViewTransitionAvailable = true;
-  }
-
-  return isViewTransitionAvailable;
-}
-export const handleTransitionStarted = (href: string, currentHref: string, routerKey: string, isDirect: boolean) => {
-  const imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`);
-  const isViewTransitionAvailable = isDirect ? true : isTransitionAvailable(routerKey);
-
-  if (imgSelector) {
-    const clickedImg = document.querySelector<HTMLImageElement>(imgSelector);
-    if (clickedImg && clickedImg.src) {
-      window.transitionImg = clickedImg.src.replace(location.origin || '', '');
-      clickedImg.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
-      return;
-    }
-  }
-  const image = document.querySelector<HTMLImageElement>('.transition-img');
-  if (image && image.src) {
-    image.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
-    window.transitionImg = image.src.replace(location.origin || '', '');
-    return;
-  }
-}
-
-
-const handleHashChangeStart = () => {
-  if (window.transition) {
-    window.transition.skipTransition();
-  }
-}
 
 const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
   if (!currentAsPath) return false
@@ -109,91 +56,14 @@ const onlyAHashChange = (currentAsPath: string, newAsPath: string) => {
 export default function MyApp({Component, pageProps }: AppProps<{ dehydratedState: DehydratedState}>) {
   const router = useRouter();
 
-  const handleRouteChangeComplete = () => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    if (!window.pageMounted) {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const routerKey = singletonRouter.router!._key;
-    const isViewTransitionAvailable = isTransitionAvailable(routerKey);
-
-    const imageSelectorByPathName = window.transitionImgSelector;
-    let imgSelector = sessionStorage.getItem(`__view_transition_selector_${routerKey}`) ?? undefined;
-    imgSelector = imgSelector ?? imageSelectorByPathName;
-    const img = imgSelector ? document.querySelector<HTMLImageElement>(imgSelector) : undefined;
-    window.transitionImgSelector = undefined;
-    if (img) {
-      const imgPosition = getElementAbsolutePosition(img);
-      sessionStorage.setItem(
-        `__view_transition_image_position_${routerKey}`,
-        JSON.stringify(imgPosition)
-      );
-      img.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
-    } else {
-      const transitionImg = document.querySelector<HTMLImageElement>(`img[src$='${window.transitionImg}']`);
-      const rect = getElementAbsolutePosition(transitionImg);
-      sessionStorage.setItem(
-        `__view_transition_image_position_${routerKey}`,
-        JSON.stringify(rect)
-      );
-
-      if (transitionImg) {
-        transitionImg.style.viewTransitionName = isViewTransitionAvailable ? 'transition-img' : '';
-      }
-    }
-
-    window.transitionImg = undefined;
-    if (window.pageMounted) {
-      window.pageMounted();
-      window.pageMounted = undefined;
-    }
-  }
-
-
-  useEffect(() => {
-    if (!router) {
-      return;
-    }
-    router.events.on('routeChangeComplete', handleRouteChangeComplete);
-    router.events.on('hashChangeStart', handleHashChangeStart);
-
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChangeComplete);
-      router.events.off('hashChangeStart', handleHashChangeStart);
-    }
-  }, []);
+  useTransitionRouterEvents(singletonRouter);
 
   useEffect(() => {
     router.prefetch = async () => Promise.resolve(undefined);
 
     router.beforePopState((props) => {
-      if (window.transition) {
-        window.transition.skipTransition();
-      }
-
       const key = (props as unknown as { key: string }).key;
       const { url, as, options } = props;
-      let transitionImgSelector =  sessionStorage.getItem(`__view_transition_selector_${key}`);
-
-      if (!transitionImgSelector) {
-        const matchedLinks = Array.from(document.querySelectorAll<HTMLImageElement>(`a[href$='${as}']`));
-        const clickedImg = matchedLinks.reduce((acc: HTMLImageElement | undefined, link) => {
-          if (!acc) {
-            const image = link.querySelector<HTMLImageElement>('.transitionable-img');
-            acc = image ?? undefined;
-          }
-          return acc;
-        }, undefined);
-        if (clickedImg) {
-          transitionImgSelector = getSelector(clickedImg);
-          sessionStorage.setItem(`__view_transition_selector_${key}`, transitionImgSelector);
-        }
-      }
 
       let forcedScroll = { x: 0, y: 0 };
       try {
@@ -240,28 +110,7 @@ export default function MyApp({Component, pageProps }: AppProps<{ dehydratedStat
         return false;
       }
 
-      const pageMountedPromise: Promise<void> = new Promise(resolve => {
-        window.pageMounted = resolve;
-      })
-
-      // Next tick
-      setTimeout(() => {
-        transitionHelper({
-          update: async () => {
-            if (window.pageMounted) {
-              await pageMountedPromise;
-            }
-          },
-        });
-        handleTransitionStarted(as, router.asPath, key, false);
-        setTimeout(async () => {
-          await router.replace(url, as, { shallow: options.shallow, locale: options.locale, scroll: false });
-          // Waiting 1 tick for document to update
-          setTimeout(() => {
-            scrollToWithYCheck(forcedScroll);
-          }, 0);
-        }, 13);
-      })
+      bpsViewTransitions(props, router)
       return false;
     });
   }, [router]);

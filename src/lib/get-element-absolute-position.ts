@@ -1,3 +1,5 @@
+import { Rectangle } from '@/lib/rectangleCollide';
+
 export function getElementAbsolutePosition(element: HTMLElement | null) {
 	if (!element) {
 		return;
@@ -8,5 +10,5 @@ export function getElementAbsolutePosition(element: HTMLElement | null) {
 		y: rect.top + window.pageYOffset,
 		width: rect.width,
 		height: rect.height
-	};
+	} as Rectangle;
 }

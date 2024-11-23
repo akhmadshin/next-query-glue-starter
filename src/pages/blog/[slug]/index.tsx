@@ -1,8 +1,8 @@
 import { withSSRTanStackQuery } from '@/lib/withSSRTanStackQuery';
 import { ArticleItemApi } from '@/types/api';
-import { getMockArticle } from '@/routes/BlogItemPage/getMockArticle';
 import { InferGetServerSidePropsType, NextPage } from 'next';
 import { BlogItemPage } from '@/routes/BlogItemPage';
+import { getMockArticle } from '@/routes/BlogItemPage/getMockArticle';
 
 const r = /\d+/;
 
@@ -10,9 +10,8 @@ export const getServerSideProps = withSSRTanStackQuery<ArticleItemApi, { slug: s
   const { slug } = params ?? {};
   let slugInt = slug ? parseInt(slug.match(r)![0]) : 0;
   slugInt = slugInt ?? 0;
-
   return {
-    props: getMockArticle(slugInt) as ArticleItemApi,
+    props: getMockArticle(slugInt) as never as ArticleItemApi,
   }
 })
 

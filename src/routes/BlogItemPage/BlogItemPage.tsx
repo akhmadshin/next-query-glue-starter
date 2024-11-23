@@ -7,9 +7,7 @@ export const BlogItemPage = () => {
   return (
     <Page>
       <BlogItemPrePage>
-        <div className="no-view-transition">
-          <BlogItemPostPage />
-        </div>
+        <BlogItemPostPage />
       </BlogItemPrePage>
     </Page>
   )

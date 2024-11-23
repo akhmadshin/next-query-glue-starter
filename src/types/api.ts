@@ -41,6 +41,7 @@ export interface Media {
 
 export interface ApiResponseMedia {
   data: {
+    id: number,
     attributes: Media
   }
 }
@@ -49,6 +50,8 @@ export type ArticleListItem = {
   title: string;
   slug: string;
   description: BlocksContent;
+  headings: Heading[];
+  previewContent: BlocksContent;
   thumbnail: ApiResponseMedia;
 }
 
@@ -56,13 +59,9 @@ export interface Heading {
   title: string;
   hash: string;
 }
-export type ArticleItem = {
-  title: string;
-  slug: string;
-  description: BlocksContent;
+export interface ArticleItem extends ArticleListItem {
   content: BlocksContent;
-  headings: Heading[];
-  thumbnail: APIResponse<Media>;
+  relatedArticles: APIResponseData<ArticleListItem>[];
 }
 
 export type ArticleListApi = APIResponseCollection<ArticleListItem>;

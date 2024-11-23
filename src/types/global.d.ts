@@ -3,8 +3,13 @@ declare global {
     pageMounted?: () => void;
     placeholderData?: object;
     transition?: ViewTransition;
-    transitionImg?: string;
+    transitionImgSrc?: string;
     transitionImgSelector?: string;
+    transitionImgPosition?: string;
+    routerKey?: string;
+    routerKeyCopy?: string;
+    routerKeyByHashRouteKey?: Record<string, string>;
+    previousRouterKey?: string;
   }
 }
 

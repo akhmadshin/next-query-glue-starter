@@ -15,7 +15,9 @@ export const SkeletonBlogItemPage: ParentComponent = ({ children }) => {
           </div>
         </div>
         <div className="dark:text-gray-100">
-          <SkeletonDescription />
+          <div className="mt-3 ">
+            <SkeletonDescription />
+          </div>
           <div className="mt-10">
             {children}
           </div>

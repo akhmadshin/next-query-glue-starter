@@ -1,14 +1,9 @@
-import { requestIdleCallback } from '@/lib/request-idle-callback';
-
 interface Props {
   skipTransition?: boolean;
   classNames?: string[];
   update: () => Promise<void>;
   onFinish?: () => void;
 }
-const transitionFinished = new CustomEvent("transitionFinished", {
-  detail: {},
-});
 
 export function transitionHelper({
   skipTransition = false,
@@ -21,9 +16,9 @@ export function transitionHelper({
       ready: Promise.resolve(Error('View transitions unsupported')),
       updateCallbackDone,
       finished: updateCallbackDone.then(() => {
-        requestIdleCallback(() => {
-          document.dispatchEvent(transitionFinished);
-        })
+        if (onFinish) {
+          onFinish();
+        }
       }),
       skipTransition: () => undefined,
     };
@@ -41,7 +36,6 @@ export function transitionHelper({
         if (el) {
           el.style.viewTransitionName = '';
         }
-        document.dispatchEvent(transitionFinished)
         if (onFinish) {
           onFinish();
         }
