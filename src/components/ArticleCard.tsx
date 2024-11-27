@@ -3,9 +3,9 @@ import React, { useRef } from 'react';
 import { Link } from '@/components/Link';
 import { SkeletonArticleCard } from '@/components/skeletons/SkeletonArticleCard';
 import { Image } from '@/components/image';
-import { WithImagePrefetch } from '@/components/image/WithImagePrefetch';
 import { RichText } from '@/components/RichText';
 import { APIResponseData, ApiResponseMedia, ArticleListItem } from '@/types/api';
+import { WithImagePreload } from './image/WithImagePreload';
 
 interface Props {
   article: APIResponseData<ArticleListItem>;
@@ -25,7 +25,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
 
   return (
     <div ref={containerRef}>
-      <WithImagePrefetch
+      <WithImagePreload
         src={`/${coverAttributes.name}`}
         height={coverAttributes.height}
         width={coverAttributes.width}
@@ -61,7 +61,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
             </div>
           </article>
         </Link>
-      </WithImagePrefetch>
+      </WithImagePreload>
 
     </div>
   )

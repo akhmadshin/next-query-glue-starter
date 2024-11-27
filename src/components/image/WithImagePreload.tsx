@@ -1,7 +1,39 @@
-import ReactDOM from 'react-dom'
+import { ParentComponent } from '@/types/general';
+import React, { useState } from 'react';
 import { ImgProps } from 'next/dist/shared/lib/get-img-props';
+import { generateImgSrc } from '@/components/image/generateImgSrcSet';
+import ReactDOM from 'react-dom';
 import Head from 'next/head';
-import { generateImgSrc } from './generateImgSrcSet';
+
+interface Props {
+  prefetchSize: string;
+  src: string;
+  height: number;
+  width: number;
+}
+export const WithImagePreload: ParentComponent<Props> = ({ prefetchSize, src, height, width, children }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    if (prefetchSize && !isHovered) {
+      setIsHovered(true);
+    }
+  }
+  return (
+    <div onMouseEnter={handleMouseEnter}>
+      {children}
+      {isHovered && (
+        <ImagePreload
+          isAppRouter={false}
+          src={src}
+          sizes={prefetchSize}
+          height={height}
+          width={width}
+        />
+      )}
+    </div>
+  )
+}
 
 export const ImagePreload = ({
   isAppRouter,

@@ -15,23 +15,6 @@ type Props = NextLinkProps & {
   disabled?: boolean;
 }
 
-export function getSelector(elm: Element) {
-  if (elm.tagName === "BODY") return "BODY";
-  const names = [];
-  while (elm.parentElement && elm.tagName !== "BODY") {
-    if (elm.id) {
-      names.unshift("#" + elm.getAttribute("id")); // getAttribute, because `elm.id` could also return a child element with name "id"
-      break; // Because ID should be unique, no more is needed. Remove the break, if you always want a full path.
-    } else {
-      let c = 1, e = elm;
-      for (; e.previousElementSibling; e = e.previousElementSibling, c++) ;
-      names.unshift(elm.tagName + ":nth-child(" + c + ")");
-    }
-    elm = elm.parentElement;
-  }
-  return names.join(">");
-}
-
 export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComponent(props, ref) {
   const {
     placeholderData,
@@ -53,9 +36,17 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
       e.preventDefault();
       return;
     }
-    if (e?.metaKey || urlAsString.startsWith('#')) {
+    if (e?.metaKey) {
       return;
     }
+
+    if (urlAsString.startsWith('#')) {
+      prepareDirectNavigation({
+        singletonRouter,
+      });
+      return;
+    }
+
     e.preventDefault();
 
     prepareDirectNavigation({
@@ -74,8 +65,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, Props>(function LinkComp
     startViewTransition(transitionImg).then(() => {
       router.push(href);
     });
-
-
   }
 
   return (
