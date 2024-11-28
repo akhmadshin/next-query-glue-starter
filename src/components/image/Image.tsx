@@ -30,7 +30,7 @@ export const Image = forwardRef<HTMLImageElement, Props>(({
     requestIdleCallback(() => {
       setBlurDataURL(createPngDataUri(thumbhash));
     });
-  }, [imgRef, src])
+  }, [imgRef, src, thumbhash])
 
   return (
     <NextImage
