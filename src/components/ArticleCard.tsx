@@ -5,7 +5,7 @@ import { SkeletonArticleCard } from '@/components/skeletons/SkeletonArticleCard'
 import { Image } from '@/components/image';
 import { RichText } from '@/components/RichText';
 import { APIResponseData, ApiResponseMedia, ArticleListItem } from '@/types/api';
-import { WithImagePreload } from './image/WithImagePreload';
+import { WithImagePreload } from 'next-with-image-preload';
 
 interface Props {
   article: APIResponseData<ArticleListItem>;
@@ -29,7 +29,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
         src={`/${coverAttributes.name}`}
         height={coverAttributes.height}
         width={coverAttributes.width}
-        prefetchSize="100vw"
+        size="100vw"
       >
         <Link
           href={`/blog/${articleAttributes.slug}/`}
@@ -44,7 +44,7 @@ export const ArticleCard: React.FC<Props> = ({ article, priority }) => {
                 className="aspect-[16/9] transitionable-img"
                 priority={priority}
                 thumbhash={coverAttributes.thumbhash}
-                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 ref={imageRef}
                 src={`/${coverAttributes.name}`}
                 alt={coverAttributes.alternativeText}

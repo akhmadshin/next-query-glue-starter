@@ -11,6 +11,7 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
+  transpilePackages: ['next-with-image-preload']
 };
 
 export default nextConfig;
